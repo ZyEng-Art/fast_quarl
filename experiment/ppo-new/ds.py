@@ -14,6 +14,7 @@ from typing import Any, Dict, Iterator, List, Set, Tuple, TypeVar, cast
 import dgl  # type: ignore
 import qtz
 import torch
+from runtime import graph_to_device
 from IPython import embed  # type: ignore
 from sortedcontainers import SortedDict  # type: ignore
 from utils import *
@@ -174,8 +175,8 @@ class ExperienceList:
         exps = BatchedExperience.new_empty()
         if start_pos < len(self):
             sc = slice(start_pos, start_pos + batch_size)
-            exps.state = dgl.batch(self.state[sc]).to(device)
-            exps.next_state = dgl.batch(self.next_state[sc]).to(device)
+            exps.state = graph_to_device(dgl.batch(self.state[sc]), device)
+            exps.next_state = graph_to_device(dgl.batch(self.next_state[sc]), device)
             exps.action = torch.stack([a.to_tensor() for a in self.action[sc]]).to(device)  # type: ignore
             exps.reward = torch.Tensor(self.reward[sc]).to(device)
             exps.game_over = torch.BoolTensor(self.game_over[sc]).to(device)  # type: ignore
@@ -234,8 +235,8 @@ class TrainExpList(ExperienceList):
         exps = TrainBatchExp.new_empty()
         if start_pos < len(self):
             sc = slice(start_pos, start_pos + batch_size)
-            exps.state = dgl.batch(self.state[sc]).to(device)
-            exps.next_state = dgl.batch(self.next_state[sc]).to(device)
+            exps.state = graph_to_device(dgl.batch(self.state[sc]), device)
+            exps.next_state = graph_to_device(dgl.batch(self.next_state[sc]), device)
             exps.action = torch.stack([a.to_tensor() for a in self.action[sc]]).to(device)  # type: ignore
             exps.reward = torch.Tensor(self.reward[sc]).to(device)
             exps.game_over = torch.BoolTensor(self.game_over[sc]).to(device)  # type: ignore

@@ -16,6 +16,7 @@ else:
 
 def config_cython():
     user_home_path = str(Path.home())
+    install_prefix = os.environ.get('QUARTZ_INSTALL_PREFIX', os.path.join(user_home_path, 'usr_local'))
     sys_cflags = sysconfig.get_config_var("CFLAGS")
     try:
         from Cython.Build import cythonize
@@ -32,12 +33,12 @@ def config_cython():
                     include_dirs=[
                         "../src/quartz/",
                         "/usr/local/include/",
-                        os.path.join(user_home_path, "usr_local/include"),
+                        os.path.join(install_prefix, "include"),
                     ],
                     libraries=["quartz_runtime"],
                     library_dirs=[
                         "/usr/local/lib/",
-                        os.path.join(user_home_path, "usr_local/lib"),
+                        os.path.join(install_prefix, "lib"),
                     ],
                     extra_compile_args=["-std=c++17"],
                     extra_link_args=[],

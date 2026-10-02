@@ -13,6 +13,7 @@ from typing import Dict, List, Optional, OrderedDict, cast
 import hydra
 import qtz
 import torch
+from runtime import select_device, distributed_backend
 import torch.distributed as dist
 import torch.distributed.rpc as rpc
 import torch.multiprocessing as mp
@@ -23,7 +24,6 @@ from icecream import ic  # type: ignore
 from IPython import embed  # type: ignore
 from model.actor_critic import ActorCritic
 from natsort import natsorted
-from numpy import str0
 from tester import Tester
 from torch.distributions import Categorical
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -91,25 +91,29 @@ class PPOMod:
         tot_processes = ddp_processes + obs_processes
         rpc_backend_options = rpc.TensorPipeRpcBackendOptions(
             init_method=f'tcp://localhost:{self.cfg.ddp_port + 1}',
-            rpc_timeout=0,
+            rpc_timeout=300,
         )
 
         if rank < ddp_processes:
             """init agent processes"""
             agent_name = get_agent_name(rank)
-            rpc.init_rpc(
-                name=agent_name,
-                rank=rank,
-                world_size=tot_processes,
-                rpc_backend_options=rpc_backend_options,
-            )
+            if obs_processes:
+                rpc.init_rpc(
+                    name=agent_name,
+                    rank=rank,
+                    world_size=tot_processes,
+                    rpc_backend_options=rpc_backend_options,
+                )
             dist.init_process_group(
-                backend='nccl',
+                backend=distributed_backend(self.cfg.gpus),
                 init_method=f'tcp://localhost:{self.cfg.ddp_port}',
                 rank=rank,
                 world_size=ddp_processes,
             )
-            self.train()
+            try:
+                self.train()
+            finally:
+                dist.destroy_process_group()
         else:
             """init observer processes"""
             obs_rank = rank - ddp_processes
@@ -123,7 +127,8 @@ class PPOMod:
                 rpc_backend_options=rpc_backend_options,
             )
         # block until all rpcs finish
-        rpc.shutdown()
+        if obs_processes:
+            rpc.shutdown()
 
     def _make_actor_critic(
         self,
@@ -147,11 +152,7 @@ class PPOMod:
 
     def train(self) -> None:
         """init agent and network"""
-        if self.cfg.gpus is None or len(self.cfg.gpus) == 0:
-            self.device = torch.device('cpu')
-        else:
-            self.device = torch.device(f'cuda:{self.cfg.gpus[self.rank]}')
-        torch.cuda.set_device(self.device)
+        self.device = select_device(self.cfg.gpus, self.rank)
         self.ac_net: ActorCritic = self._make_actor_critic()
         self.ac_net = cast(
             ActorCritic, nn.SyncBatchNorm.convert_sync_batchnorm(self.ac_net)
@@ -234,7 +235,7 @@ class PPOMod:
                 project=self.cfg.wandb.project,
                 entity=self.cfg.wandb.entity,
                 mode=self.wandb_mode,
-                config=self.cfg,  # type: ignore
+                config=OmegaConf.to_container(self.cfg, resolve=True),
                 name=run_name,
             )
         printfl(f'rank {self.rank} / {self.ddp_processes} on {self.device} initialized')
@@ -417,7 +418,7 @@ class PPOMod:
                     exps.state, ActorCritic.gnn_name()
                 )
                 nodes_offset: torch.LongTensor = torch.LongTensor([0] * num_nodes.shape[0]).to(self.device)  # type: ignore
-                nodes_offset[1:] = torch.cumsum(num_nodes, dim=0)[:-1]
+                nodes_offset[1:] = torch.cumsum(num_nodes.to(self.device), dim=0)[:-1]
                 selected_nodes = exps.action[:, 0] + nodes_offset
                 selected_node_embeds = b_node_embeds[selected_nodes]
                 # NOTE: this is the "new value" updated with the network's updates
@@ -564,14 +565,10 @@ class PPOMod:
     def init_ddp_processes(self, rank: int, world_size: int) -> None:
         seed_all(self.cfg.seed)
         """init Quartz and other things"""
-        if self.cfg.gpus is None or len(self.cfg.gpus) == 0:
-            self.device = torch.device('cpu')
-        else:
-            self.device = torch.device(f'cuda:{self.cfg.gpus[rank]}')
-        torch.cuda.set_device(self.device)
+        self.device = select_device(self.cfg.gpus, rank)
         printfl(f'rank {rank} / {world_size} use {self.device}')
         dist.init_process_group(
-            backend='nccl',
+            backend=distributed_backend(self.cfg.gpus),
             init_method=f'tcp://localhost:{self.cfg.ddp_port}',
             rank=rank,
             world_size=world_size,

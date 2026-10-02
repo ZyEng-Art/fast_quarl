@@ -10,6 +10,7 @@ from typing import Dict, List, Optional
 import hydra
 import qtz
 import torch
+from runtime import graph_to_device
 import wandb
 from ds import *
 from model.actor_critic import ActorCritic
@@ -290,11 +291,11 @@ class Tester:
         self.ac_net.eval()
         num_eps = len(cur_circs)
         """compute embeds and use Critic to evaluate each node"""
-        b_circs: dgl.DGLGraph = dgl.batch(
+        b_circs: dgl.DGLGraph = graph_to_device(dgl.batch(
             [circuit.to_dgl_graph() for circuit in cur_circs]
-        ).to(self.device)
+        ), self.device)
         num_nodes: torch.LongTensor = (
-            b_circs.batch_num_nodes()
+            b_circs.batch_num_nodes().to(self.device)
         )  # (num_graphs, ) assert each elem > 0
         # (batch_num_nodes, embed_dim)
         b_node_embeds: torch.Tensor = self.ac_net.gnn(b_circs)
@@ -356,7 +357,7 @@ class Tester:
         node_offsets = torch.zeros(b_sampled_nodes.shape[0], dtype=torch.long).to(
             self.device
         )
-        node_offsets[1:] = torch.cumsum(num_nodes, dim=0)[:-1]
+        node_offsets[1:] = torch.cumsum(num_nodes.to(self.device), dim=0)[:-1]
         sampled_node_b_ids = b_sampled_nodes + node_offsets
         # (num_graphs, embed_dim)
         sampled_node_embeds = b_node_embeds[sampled_node_b_ids]

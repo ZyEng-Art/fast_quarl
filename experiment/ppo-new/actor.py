@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Tuple
 import dgl  # type: ignore
 import qtz
 import torch
+from runtime import graph_to_device
 import torch.distributed as dist
 import torch.distributed.rpc as rpc
 import torch.nn as nn
@@ -240,7 +241,7 @@ class PPOAgent:
         self.ac_net.eval()
         """respond to a single query"""
         pygraph: quartz.PyGraph = qtz.qasm_to_graph(state_str)
-        dgl_graph: dgl.DGLGraph = pygraph.to_dgl_graph().to(self.device)
+        dgl_graph: dgl.DGLGraph = graph_to_device(pygraph.to_dgl_graph(), self.device)
         num_nodes: int = dgl_graph.num_nodes()
         """compute embeds and use Critic to evaluate each node"""
         node_embeds: torch.Tensor = self.ac_net.gnn(dgl_graph)
@@ -269,7 +270,7 @@ class PPOAgent:
         )  # this single action is returned for the obs that calls this function
         # It is available after self.future_actions is set
         pygraph: quartz.PyGraph = qtz.qasm_to_graph(state_str)
-        dgl_graph: dgl.DGLGraph = pygraph.to_dgl_graph().to(self.device)
+        dgl_graph: dgl.DGLGraph = graph_to_device(pygraph.to_dgl_graph(), self.device)
         if self.states_buf[obs_id] is None:
             self.states_buf[obs_id] = dgl_graph
         else:
@@ -284,7 +285,7 @@ class PPOAgent:
                 """collected a batch, start batch inference"""
                 b_state: dgl.DGLGraph = dgl.batch(self.states_buf)
                 num_nodes: torch.Tensor = (
-                    b_state.batch_num_nodes()
+                    b_state.batch_num_nodes().to(self.device)
                 )  # (num_graphs, ) assert each elem > 0
                 """compute embeds and use Critic to evaluate each node"""
                 # (batch_num_nodes, embed_dim)
@@ -322,7 +323,7 @@ class PPOAgent:
                 node_offsets = torch.zeros(
                     b_sampled_nodes.shape[0], dtype=torch.long
                 ).to(self.device)
-                node_offsets[1:] = torch.cumsum(num_nodes, dim=0)[:-1]
+                node_offsets[1:] = torch.cumsum(num_nodes.to(self.device), dim=0)[:-1]
                 sampled_node_ids = b_sampled_nodes + node_offsets
                 # (num_graphs, embed_dim)
                 sampled_node_embeds = b_node_embeds[sampled_node_ids]
@@ -451,8 +452,9 @@ class PPOAgent:
         """communicate with others to get max of max_eps_len_for_all"""
         max_eps_len_all_ranks = torch.zeros(self.num_agents).to(self.device)
         max_eps_len_all_ranks[self.id] = max_eps_len_for_all
-        for r in range(self.num_agents):
-            dist.broadcast(max_eps_len_all_ranks[r], r)
+        if self.num_agents > 1:
+            for r in range(self.num_agents):
+                dist.broadcast(max_eps_len_all_ranks[r], r)
         max_eps_len_for_all = int(max_eps_len_all_ranks.max())
         """make async RPC to kick off an episode on observers"""
         for obs_rref, init_qasm, orig_qasm in zip(
@@ -621,9 +623,9 @@ class PPOAgent:
         num_eps = len(cur_graphs)
         """compute embeds and use Critic to evaluate each node"""
         dgl_graphs: List[dgl.DGLGraph] = [g.to_dgl_graph() for g in cur_graphs]
-        b_state: dgl.DGLGraph = dgl.batch(dgl_graphs).to(self.device)
+        b_state: dgl.DGLGraph = graph_to_device(dgl.batch(dgl_graphs), self.device)
         num_nodes: torch.LongTensor = (
-            b_state.batch_num_nodes()
+            b_state.batch_num_nodes().to(self.device)
         )  # (num_graphs, ) assert each elem > 0
         # (batch_num_nodes, embed_dim)
         b_node_embeds: torch.Tensor = self.ac_net.gnn(b_state)
@@ -662,7 +664,7 @@ class PPOAgent:
         node_offsets = torch.zeros(b_sampled_nodes.shape[0], dtype=torch.long).to(
             self.device
         )
-        node_offsets[1:] = torch.cumsum(num_nodes, dim=0)[:-1]
+        node_offsets[1:] = torch.cumsum(num_nodes.to(self.device), dim=0)[:-1]
         sampled_node_b_ids = b_sampled_nodes + node_offsets
         # (num_graphs, embed_dim)
         sampled_node_embeds = b_node_embeds[sampled_node_b_ids]
@@ -785,8 +787,9 @@ class PPOAgent:
         """communicate with other ranks to get max of max_eps_len_for_all"""
         max_eps_len_all_ranks = torch.zeros(self.num_agents).to(self.device)
         max_eps_len_all_ranks[self.id] = max_eps_len_for_all
-        for r in range(self.num_agents):
-            dist.broadcast(max_eps_len_all_ranks[r], r)
+        if self.num_agents > 1:
+            for r in range(self.num_agents):
+                dist.broadcast(max_eps_len_all_ranks[r], r)
         max_eps_len_for_all = int(max_eps_len_all_ranks.max())
 
         """run episodes"""

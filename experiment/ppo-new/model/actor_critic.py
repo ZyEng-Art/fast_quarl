@@ -6,6 +6,8 @@ import dgl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.distributed as dist
+from runtime import tensor_graph_backend
 from model.basis import *
 from model.qgin import *
 from model.qgnn import *
@@ -61,6 +63,8 @@ class ActorCritic(nn.Module):
             )
             gnn_output_dim = gnn_hidden_dim
         elif gnn_type.lower() == 'QGIN'.lower():
+            if tensor_graph_backend():
+                raise ValueError('XPU tensor graph backend currently requires gnn_type=QGNN')
             self.gnn = QGIN(
                 num_layers=gnn_num_layers,
                 num_mlp_layers=gin_num_mlp_layers,
@@ -80,11 +84,14 @@ class ActorCritic(nn.Module):
 
     def ddp_model(self) -> ActorCritic:
         """make ddp verison instances for each sub-model"""
+        if dist.get_world_size() == 1:
+            return self
+        device_ids = None if self.device.type == 'cpu' else [self.device]
         _ddp_model = ActorCritic(
             device=self.device,
-            gnn=DDP(self.gnn, device_ids=[self.device]),
-            actor=DDP(self.actor, device_ids=[self.device]),
-            critic=DDP(self.critic, device_ids=[self.device]),
+            gnn=DDP(self.gnn, device_ids=device_ids),
+            actor=DDP(self.actor, device_ids=device_ids),
+            critic=DDP(self.critic, device_ids=device_ids),
         )
         return _ddp_model
 

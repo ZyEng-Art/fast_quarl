@@ -4,6 +4,7 @@ import dgl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from runtime import tensor_graph_backend
 
 
 class QConv(nn.Module):
@@ -54,6 +55,8 @@ class QConv(nn.Module):
         return {'h_N': h}
 
     def forward(self, g, h):
+        if tensor_graph_backend():
+            return self.forward_tensors(g, h)
         g.ndata['h'] = h
         g.update_all(self.message_func, self.reduce_func)
         h_N = g.ndata['h_N']
@@ -62,6 +65,30 @@ class QConv(nn.Module):
         if self.normalize:
             h = F.normalize(h, p=2, dim=-1)
         return h
+
+    def forward_tensors(self, g, h):
+        src, dst = g.edges(order='eid')
+        src = src.to(h.device)
+        dst = dst.to(h.device)
+        weights = torch.stack(
+            [g.edata['src_idx'], g.edata['dst_idx'], g.edata['reversed']], dim=1
+        ).to(device=h.device, dtype=h.dtype)
+        messages = self.aggregator(torch.cat([h[src], weights], dim=1))
+        h_N = h.new_zeros((g.num_nodes(), messages.shape[1]))
+        if self.aggregator_type in ('sum', 'mean'):
+            h_N = h_N.index_add(0, dst, messages)
+            if self.aggregator_type == 'mean':
+                degree = g.in_degrees().to(device=h.device, dtype=h.dtype)
+                h_N = h_N / degree.clamp_min(1).unsqueeze(1)
+        elif self.aggregator_type == 'max':
+            h_N = h_N.scatter_reduce(
+                0, dst.unsqueeze(1).expand_as(messages), messages,
+                reduce='amax', include_self=True,
+            )
+        else:
+            raise NotImplementedError(self.aggregator_type)
+        result = self.linear2(torch.cat([h, h_N], dim=1))
+        return F.normalize(result, p=2, dim=-1) if self.normalize else result
 
 
 class QGNN(nn.Module):
@@ -86,6 +113,11 @@ class QGNN(nn.Module):
         self.convs: nn.ModuleList = nn.ModuleList(convs_)
 
     def forward(self, g: dgl.DGLGraph) -> torch.Tensor:
+        if tensor_graph_backend():
+            h = self.embedding(g.ndata['gate_type'].to(self.embedding.weight.device))
+            for conv in self.convs:
+                h = conv(g, h)
+            return h
         g.ndata['h'] = self.embedding(g.ndata['gate_type'])
         w = torch.cat(
             [
