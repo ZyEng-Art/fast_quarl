@@ -1,0 +1,20 @@
+[
+  {
+    "device": "cpu",
+    "batch_isolation_max_error": 0.0,
+    "local_distant_change": 0.0,
+    "global_distant_change": 0.02646946907043457,
+    "permutation_max_error": 2.384185791015625e-07,
+    "adam_parameter_delta": 0.00030000507831573486,
+    "finite_gradients": true
+  },
+  {
+    "device": "cuda:4",
+    "batch_isolation_max_error": 0.0,
+    "local_distant_change": 0.0,
+    "global_distant_change": 0.008088499307632446,
+    "permutation_max_error": 1.7881393432617188e-07,
+    "adam_parameter_delta": 0.00030000507831573486,
+    "finite_gradients": true
+  }
+]

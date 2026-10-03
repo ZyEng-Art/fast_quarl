@@ -66,3 +66,19 @@ python tools/fast_quarl/run_experiment.py controller \
 网页数据内嵌，可离线使用；GitHub 文件预览不会直接执行 HTML。轨迹 replay 使用 `nam_ecc.json`，训练使用 `nam_325_ecc.json`，两者 action ID 不可直接互换。累计覆盖按门 GUID 追踪：原始节点覆盖与历次新增节点分别统计；历次节点数不是同时存在的子图大小。保存轨迹只有一种可重现后继的匹配恢复，不保证唯一。
 
 分析数据仅覆盖已保存的成功轨迹，不能单独证明强化学习有效。当前随机对照仍在运行，其最终结果未包含在本仓库的已完成记录中。
+
+
+## Global circuit context experiment
+
+Branch `feat/global-context` adds `QGNNGlobal`: each node retains a six-layer QGNN local representation, then fuses it with the mean representation of every node in its circuit and log(1 + circuit gate count). Pooling respects DGL batch boundaries. A Linear + ReLU fusion keeps the existing actor/critic input width. This is a pooled-context baseline, not a Graphormer or a claim of improved optimization quality.
+
+Use complete circuit observations for both rollout and PPO: `QGNNGlobal` requires `--no-subgraph-opt`. The localized `next_nodes` value target and all rewrite legality checks remain unchanged. The existing `QGNN` default and subgraph default are preserved.
+
+```bash
+python tools/fast_quarl/check_global_context.py --gpu 4 --output results/global_context/checks.json
+python tools/fast_quarl/run_experiment.py controller --gnn-type QGNNGlobal --no-subgraph-opt --train-gpu 4 --search-gpu 5 --ddp-port 25200 --run-dir runs/global_context_rm
+```
+
+`QUARL_NATIVE_PYTHON` optionally points to a compatible existing Quartz Python build; normally build this checkout following the instructions above. On node36 the experiment reuses the existing compiled Quartz extension while loading the model and PPO code from this branch. Results must be compared with the full-graph QGNN arm using transitions and wall time to first verified 35 gates. Extra model parameters and changed initial actor/critic RNG state mean this is an architecture comparison rather than identical-model timing.
+
+Checks cover per-circuit pooling isolation, node permutation equivariance, influence beyond six hops, finite gradients, Adam updates, and actor/critic output shapes on CPU and P800. Node36 evidence is stored in `results/global_context/node36_checks.json`.

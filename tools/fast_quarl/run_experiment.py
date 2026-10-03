@@ -7,7 +7,7 @@ def atomic(path,data):
  path=pathlib.Path(path);path.parent.mkdir(parents=True,exist_ok=True);tmp=path.with_suffix(path.suffix+'.tmp');tmp.write_text(json.dumps(data,indent=2));tmp.replace(path)
 
 def imports():
- os.chdir(ROOT/'experiment/ppo-new');sys.path.insert(0,str(ROOT/'experiment/ppo-new'));sys.path.insert(0,str(ROOT/'python'))
+ os.chdir(ROOT/'experiment/ppo-new');sys.path.insert(0,str(ROOT/'experiment/ppo-new'));sys.path.insert(0,os.environ.get('QUARL_NATIVE_PYTHON',str(ROOT/'python')))
  os.environ.setdefault('QUARL_GRAPH_BACKEND','torch');os.environ.setdefault('DGLBACKEND','pytorch')
  os.environ.setdefault('OMP_NUM_THREADS','4');os.environ.setdefault('MKL_NUM_THREADS','4');os.environ.setdefault('WANDB_MODE','disabled')
 
@@ -46,9 +46,9 @@ def train(a):
    return model
  run=BASE/f'{a.seed}_{a.mode}';run.mkdir(parents=True,exist_ok=True)
  cfg=OmegaConf.structured(Nam2FTConfig());cfg.input_graphs[0].path=str(BASE/'initial.qasm');cfg.seed=a.seed;cfg.gpus=[a.gpu];cfg.resume=False;cfg.wandb.en=False
- cfg.gnn_num_layers=6;cfg.num_eps_per_iter=64;cfg.agent_batch_size=64;cfg.max_eps_len=600;cfg.min_eps_len=20
+ cfg.gnn_type=a.gnn_type;cfg.subgraph_opt=a.subgraph_opt;cfg.gnn_num_layers=6;cfg.num_eps_per_iter=64;cfg.agent_batch_size=64;cfg.max_eps_len=600;cfg.min_eps_len=20
  cfg.dyn_eps_len=False;cfg.mini_batch_size=4800;cfg.k_epochs=5;cfg.lr_scheduler='none';cfg.time_budget=''
- cfg.best_graph_output_dir=str(run/"best_graphs");cfg.ddp_port=24600+a.gpu;cfg.omp_num_threads=4;cfg.max_iterations=100000;cfg.obs_per_agent=0
+ cfg.best_graph_output_dir=str(run/"best_graphs");cfg.ddp_port=a.ddp_port+a.gpu;cfg.omp_num_threads=4;cfg.max_iterations=100000;cfg.obs_per_agent=0
  if a.mode!='update':cfg.lr_gnn=cfg.lr_actor=cfg.lr_critic=0.0
  (run/'.hydra').mkdir(exist_ok=True);OmegaConf.save(OmegaConf.create({'c':cfg}),run/'.hydra/config.yaml')
  started=time.monotonic();runner=PilotPPO(cfg,str(run));runner.init_process(0,1,0)
@@ -142,14 +142,14 @@ def controller():
  initial=qtz.qasm_to_graph(original)
  if ARGS.preprocess:initial.rotation_merging('rz')
  (BASE/'initial.qasm').write_text(initial.to_qasm_str())
- start=time.time();run=BASE/'98766_update';run.mkdir(exist_ok=True)
+ start=time.time();run=BASE/f'{ARGS.seed}_{ARGS.mode}';run.mkdir(exist_ok=True)
  protocol={'start_unix':start,'start_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime(start)),'seed':ARGS.seed,'target_rm':35,'target_raw':36,'pretrained':False,'initial_raw_gates':initial.gate_count,'preprocess_rotation_merging':ARGS.preprocess,'warmup_seconds':300,'search_timeout_seconds':1200,'training':{'episodes':64,'horizon':600,'epochs':5,'minibatch':4800,'learning_rates':[.0003,.0003,.0005]},'rotation_merging':'postprocess every new best circuit; raw best shared between trainer and search','stop_rule':'stop both workers on verified <=35 RM gates; no automatic wall-time cutoff','implementation':'fast_quarl','upstream_xpu_commit':'c719a205b75af90f01ab67affb764cdfff15a738'}
- protocol['mode']=ARGS.mode;protocol['backward']=ARGS.mode=='update';protocol['optimizer_updates']=ARGS.mode=='update'
+ protocol['code_commit']=subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip();protocol['native_python']=os.environ.get('QUARL_NATIVE_PYTHON',str(ROOT/'python'));protocol['gnn_type']=ARGS.gnn_type;protocol['subgraph_opt']=ARGS.subgraph_opt;protocol['devices']={'train':ARGS.train_gpu,'search':ARGS.search_gpu};protocol['mode']=ARGS.mode;protocol['backward']=ARGS.mode=='update';protocol['optimizer_updates']=ARGS.mode=='update'
  protocol['acceleration']='prepare shared graph topology once per GNN forward; identical network and PPO hyperparameters'
  atomic(BASE/'protocol.json',protocol);jobs={};logs={};best_raw=59;best_rm=59;milestones=[];verified={}
  def launch(kind,gpu):
   logs[kind]=open(run/(kind+'.log'),'w')
-  jobs[kind]=subprocess.Popen([sys.executable,__file__,kind,'--seed',str(ARGS.seed),'--mode',ARGS.mode,'--gpu',str(gpu),'--run-dir',str(BASE)],stdout=logs[kind],stderr=subprocess.STDOUT)
+  jobs[kind]=subprocess.Popen([sys.executable,__file__,kind,'--seed',str(ARGS.seed),'--mode',ARGS.mode,'--gpu',str(gpu),'--run-dir',str(BASE),'--gnn-type',ARGS.gnn_type,'--ddp-port',str(ARGS.ddp_port),('--subgraph-opt' if ARGS.subgraph_opt else '--no-subgraph-opt')],stdout=logs[kind],stderr=subprocess.STDOUT)
  launch('train',ARGS.train_gpu)
  try:
   while True:
@@ -196,5 +196,6 @@ def controller():
   for log in logs.values():log.close()
 
 if __name__=='__main__':
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('kind',choices=['controller','train','search']);p.add_argument('--seed',type=int,default=98766);p.add_argument('--mode',choices=['update','uniform'],default='update');p.add_argument('--gpu',type=int,default=0);p.add_argument('--train-gpu',type=int,default=0);p.add_argument('--search-gpu',type=int,default=1);p.add_argument('--run-dir',type=pathlib.Path,default=BASE);p.add_argument('--preprocess',action=argparse.BooleanOptionalAction,default=True);ARGS=p.parse_args();BASE=ARGS.run_dir.resolve()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('kind',choices=['controller','train','search']);p.add_argument('--seed',type=int,default=98766);p.add_argument('--mode',choices=['update','uniform'],default='update');p.add_argument('--gpu',type=int,default=0);p.add_argument('--train-gpu',type=int,default=0);p.add_argument('--search-gpu',type=int,default=1);p.add_argument('--run-dir',type=pathlib.Path,default=BASE);p.add_argument('--preprocess',action=argparse.BooleanOptionalAction,default=True);p.add_argument('--gnn-type',choices=['QGNN','QGNNGlobal'],default='QGNN');p.add_argument('--subgraph-opt',action=argparse.BooleanOptionalAction,default=True);p.add_argument('--ddp-port',type=int,default=24600);ARGS=p.parse_args();BASE=ARGS.run_dir.resolve()
+ if ARGS.gnn_type=='QGNNGlobal' and ARGS.subgraph_opt:p.error('QGNNGlobal requires --no-subgraph-opt to use complete circuit context')
  {'controller':controller,'train':lambda:train(ARGS),'search':lambda:search(ARGS)}[ARGS.kind]()

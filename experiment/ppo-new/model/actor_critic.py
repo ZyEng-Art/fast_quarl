@@ -11,6 +11,7 @@ from runtime import tensor_graph_backend
 from model.basis import *
 from model.qgin import *
 from model.qgnn import *
+from model.qgnn_global import QGNNGlobal
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 
@@ -53,8 +54,9 @@ class ActorCritic(nn.Module):
 
         self.gnn_num_layers = gnn_num_layers
         self.device = device
-        if gnn_type.lower() == 'QGNN'.lower():
-            self.gnn = QGNN(
+        if gnn_type.lower() in ('qgnn', 'qgnnglobal'):
+            gnn_class = QGNNGlobal if gnn_type.lower() == 'qgnnglobal' else QGNN
+            self.gnn = gnn_class(
                 gnn_num_layers,
                 num_gate_types,
                 gate_type_embed_dim,
