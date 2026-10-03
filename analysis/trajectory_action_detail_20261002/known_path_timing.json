@@ -1,0 +1,58 @@
+[
+  {
+    "circuit": "barenco_tof_3",
+    "path": "38_0",
+    "actions": 38,
+    "repetitions": [
+      {
+        "total_seconds": 0.011838061036542058,
+        "native_apply_seconds": 0.004508134443312883,
+        "anchor_mapping_seconds": 0.007279334357008338,
+        "final_gates": 38
+      },
+      {
+        "total_seconds": 0.011342524085193872,
+        "native_apply_seconds": 0.004449934931471944,
+        "anchor_mapping_seconds": 0.006858055246993899,
+        "final_gates": 38
+      },
+      {
+        "total_seconds": 0.011320659192278981,
+        "native_apply_seconds": 0.0044465200044214725,
+        "anchor_mapping_seconds": 0.0068404951598495245,
+        "final_gates": 38
+      }
+    ],
+    "median_total_seconds": 0.011342524085193872,
+    "median_native_apply_seconds": 0.004449934931471944,
+    "scope": "known saved actions; no exploration, GNN inference, DGL construction, PPO update, or alternative candidate matching; excludes imports, ECC initialization, and initial parsing; native hashing checked at every step"
+  },
+  {
+    "circuit": "gf2^6_mult",
+    "path": "370_2",
+    "actions": 271,
+    "repetitions": [
+      {
+        "total_seconds": 0.7739834990352392,
+        "native_apply_seconds": 0.31214907648973167,
+        "anchor_mapping_seconds": 0.4611797691322863,
+        "final_gates": 370
+      },
+      {
+        "total_seconds": 0.7718980349600315,
+        "native_apply_seconds": 0.3129788669757545,
+        "anchor_mapping_seconds": 0.4582694561686367,
+        "final_gates": 370
+      },
+      {
+        "total_seconds": 0.770177333150059,
+        "native_apply_seconds": 0.31228849315084517,
+        "anchor_mapping_seconds": 0.4572471284773201,
+        "final_gates": 370
+      }
+    ],
+    "median_total_seconds": 0.7718980349600315,
+    "median_native_apply_seconds": 0.31228849315084517,
+    "scope": "known saved actions; no exploration, GNN inference, DGL construction, PPO update, or alternative candidate matching; excludes imports, ECC initialization, and initial parsing; native hashing checked at every step"
+  }
+]

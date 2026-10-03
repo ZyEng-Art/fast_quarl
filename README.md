@@ -1,186 +1,68 @@
-# The Quartz Quantum Circuit Optimizer
+# fast_quarl
 
-Quartz is a quantum circuit optimizer that automatically generates and verifies circuit transformations for an arbitrary quantum gate set. To optimize an input quantum circuit, Quartz uses these auto-generated circuit transformations to construct a search space of functionally equivalent quantum circuits.
-Quartz uses a cost-based search algorithm to explore the space and discovers highly optimized quantum circuits.
+Quarl 的昆仑芯 P800 / torch_xmlir 适配与 GNN 加速实现，保留 NVIDIA CUDA 与 CPU 运行路径。
 
-## Install Quartz
+基于 [quantum-compiler/Quarl](https://github.com/quantum-compiler/Quarl) 的 `385cf5e04a41590a48a2fe82b99f5e99e6cd2279`，XPU 适配提交为 `c719a205b75af90f01ab67affb764cdfff15a738`。原项目遵循 Apache-2.0，许可证见 [LICENSE](LICENSE)，原安装说明见 [INSTALL.md](INSTALL.md)。论文：[Quarl: A Learning-Based Quantum Circuit Optimizer](https://arxiv.org/abs/2307.10120)。
 
-See [instructions](INSTALL.md) to install Quartz from source code.
+## 改动
 
-## Use Quartz
+- 使用 PyTorch tensor 图聚合适配 torch_xmlir 的 CUDA 接口；在该环境中 DGL 拓扑保留在 CPU。
+- 每次 GNN 前向只准备一次边索引和边特征，供所有卷积层共享；不缓存随参数更新而变化的 embedding。
+- 提供并发 PPO 训练与搜索、双向最好电路交换、等价性验证、35 门目标停止和均匀随机无学习对照。
+- 提供 Barenco、GF 优化轨迹的离线 DAG 网页：动作依赖、单步子图大小、整条轨迹累计覆盖范围。
 
-Quartz targets the logical optimization stage in quantum circuit compilation and can be used to optimize quantum circuits for arbitrary gate sets (e.g., IBM or Regetti quantum processors). Quartz works in two steps. First, for a given gate set, the Quartz circuit generator and circuit equivalence verifier can automatically generate and verify possible circuit transformations, represented as an equivalent circuit class (ECC) set. Second, Quartz's circuit optimizer takes a quantum circuit and an ECC set as inputs and use cost-based backtracking search to discover a super-optimized quantum circuit.
+## 已测结果
 
-### Generate and verify an ECC set
+| 实验 | 首次达到 Barenco 35 门 |
+| --- | ---: |
+| XPU 适配原版，旋转合并预处理 | 16,562.92 秒（276.05 分钟） |
+| 共享拓扑加速版，相同预处理 | 9,004.64 秒（150.08 分钟） |
 
-To generate and verify pre-defined ECC sets, you can simply run `./gen_ecc_set.sh`.
+均从头训练，种子 98766，无预训练权重，最终电路经过等价性验证。单次达到目标耗时约减少 45.6%；这包含搜索随机性与运行时负载差异，不能视为稳定的硬件或算法加速比。
 
-To generate an `(n,q)`-complete ECC set with `m` input parameters for some gate set,
-you can change the main function in `src/test/gen_ecc_set.cpp` to the following:
+GNN 微基准批量 64：前向 4.49 ms → 2.64 ms（1.70×），前向＋反向 8.04 ms → 6.08 ms（1.32×）。基准覆盖批量 8、64、256；测试输出和梯度最大差异均为 0。微基准不包含 PPO actor/critic、优化器、候选匹配或完整搜索。实际 PPO minibatch 为 4800，不能直接套用批量 64 的反向加速比。
 
-```c++
-gen_ecc_set({Gate set}, "{Name of the gate set}_{n}_{q}_", true, true, q, m, n);
-return 0;
-```
-where `{Gate set}` can be `{GateType::rz, GateType::h, GateType::cx, GateType::x, GateType::add}` for the Nam gate set,
-`{GateType::u1, GateType::u2, GateType::u3, GateType::cx, GateType::add}` for the IBM gate set,
-`{GateType::rx, GateType::rz, GateType::cz, GateType::add}` for the Rigetti gate set,
-or any gate set you want. `GateType::add` is to enable using a sum of two input parameters as an input to a parameterized quantum gate.
-See all supported gate types in [gates.inc.h](src/quartz/gate/gates.inc.h) and their implementations in [gate/](src/quartz/gate).
+原始记录、硬件说明和最终 QASM 见 [results/barenco_tof_3](results/barenco_tof_3)。
 
-And then you can run `./gen_ecc_set.sh` to generate the ECC set.
+## 环境与构建
 
-## Optimize a quantum circuit
+已验证环境：Linux、Python 3.10、PyTorch 2.9.0＋torch_xmlir、DGL 1.1.3、NumPy 1.26.4。torch_xmlir 由昆仑芯环境提供，它的 `cuda` 设备名称不表示实际使用 NVIDIA GPU。普通 NVIDIA 环境使用匹配自身 CUDA 的 PyTorch/DGL 安装。
 
-We show the steps to super-optimize a quantum circuit in Quartz.
+保留上游 Python 环境描述：[env_ppo.yml](experiment/ppo-new/env_ppo.yml)。XPU 环境不要直接照该文件替换厂商提供的 PyTorch。额外需要 CMake、C++17 编译器、Cython、OmegaConf、Hydra、Qiskit、W&B（实验中禁用联网记录）等原项目依赖。
 
-#### Input the circuit
-
-To optimize a circuit, you can write your circuit in the `qasm` language and write it to a `qasm` file.
-Currently, we only support a subset of `qasm`'s grammar.
-Specifically, the `qasm` files we support should consist of a header and lines of `qasm` instructions.
-The header should be in the format below:
-
-```
-OPENQASM 2.0;
-include "qelib1.inc";
-qreg q[24];
+```bash
+export QUARL_PYTHON=python
+bash tools/fast_quarl/build_xpu.sh
+export PYTHONPATH="$PWD/python:${PYTHONPATH:-}"
+export LD_LIBRARY_PATH="$PWD/.xpu-native/lib:${LD_LIBRARY_PATH:-}"
+export DGLBACKEND=pytorch QUARL_GRAPH_BACKEND=torch
+export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 WANDB_MODE=disabled
 ```
 
-The instructions should be in the format below:
-```
-cx q[3], q[2];
-cx q[8], q[7];
-cx q[14], q[13];
-cx q[21], q[20];
-```
+## 验证与运行
 
-We do not support parameterized gates currently.
+```bash
+python experiment/ppo-new/tools/check_xpu.py --cpu-only
+python tools/fast_quarl/benchmark.py --gpu 0 --output runs/benchmark.json
 
-To input a circuit in `qasm` file, you should first create a `Context` object, providing the gate set you use in your input file as argument as below:
+# 两张卡：前 5 分钟仅训练，随后启动并发搜索；达到已验证的 35 门停止。
+python tools/fast_quarl/run_experiment.py controller \
+  --train-gpu 0 --search-gpu 1 --seed 98766 --run-dir runs/learning_rm
 
-``` cpp
-Context src_ctx({GateType::h, GateType::ccz, GateType::x, GateType::cx,
-                GateType::input_qubit, GateType::input_param});
+# 无学习对照：均匀策略、冻结完整模型状态，无 backward/optimizer.step。
+python tools/fast_quarl/run_experiment.py controller \
+  --mode uniform --train-gpu 2 --search-gpu 3 --run-dir runs/uniform_rm
 ```
 
-After that, you need a `QASMParser` object to parse the input `qasm` file. You can construct it as below:
+使用 `--no-preprocess` 从原始 58 门电路开始；默认旋转合并为 46 门。每次实验必须使用新的 `--run-dir`。默认没有时间上限；随机对照可能长时间停留在 38 门。比较策略时同时报告时间、采样转换数和种子，不能把均匀对照更高的采样吞吐误认为学习收益。
 
-``` cpp
-QASMParser qasm_parser(&src_ctx);
-```
+## 轨迹网页
 
-Now you can use the `QASMParser` object to load the circuit from the `qasm` file to a `CircuitSeq` object, as below:
+下载仓库后用 Chrome/Safari 打开：
 
-``` cpp
-CircuitSeq *seq = nullptr;
-if (!qasm_parser.load_qasm(input_fn, seq)) {
-    std::cout << "Parser failed" << std::endl;
-}
-```
+- [动作 DAG、子图大小与累计覆盖](analysis/trajectory_action_detail_20261002/action_viewer.html)
+- [门数与完整轨迹总览](analysis/trajectory_analysis_20261002/trajectory_viewer.html)
 
-After you have the circuit loaded into the `CircuitSeq` object, you can construct a `Graph` object from it. The `Graph` object is the final circuit representation used in our optimizer. You can construct it as below:
+网页数据内嵌，可离线使用；GitHub 文件预览不会直接执行 HTML。轨迹 replay 使用 `nam_ecc.json`，训练使用 `nam_325_ecc.json`，两者 action ID 不可直接互换。累计覆盖按门 GUID 追踪：原始节点覆盖与历次新增节点分别统计；历次节点数不是同时存在的子图大小。保存轨迹只有一种可重现后继的匹配恢复，不保证唯一。
 
-``` cpp
-Graph graph(&src_ctx, seq);
-```
-
-#### Context shift
-
-If the input gate set is different from your target gate set, you should consider using the `context_shift` APIs to shift the context constructed with the gate sets to a context constructed with the target gate set.
-
-To shift the context, you should create three `Context` objects, one for input, one for target, and one for their union as below:
-
-``` cpp
-Context src_ctx({GateType::h, GateType::ccz, GateType::x, GateType::cx,
-                GateType::input_qubit, GateType::input_param});
-Context dst_ctx({GateType::h, GateType::x, GateType::rz, GateType::add,
-                GateType::cx, GateType::input_qubit, GateType::input_param});
-auto union_ctx = union_contexts(&src_ctx, &dst_ctx);
-```
-
-In order to shift contexts, you should provide the rules to express a gate in the input gate set to the target gate set. To do this, you should construct a `RuleParser` object. As follows:
-
-``` cpp
-RuleParser rules(
-    {"cx q0 q1 = rx q1 pi; rz q1 0.5pi; rx q1 0.5pi; rz q1 -0.5pi; cz q0 "
-        "q1; rx q1 pi; rz q1 0.5pi; rx q1 0.5pi; rz q1 -0.5pi;",
-        "h q0 = rx q0 pi; rz q0 0.5pi; rx q0 0.5pi; rz q0 -0.5pi;",
-        "x q0 = rx q0 pi;"});
-```
-
-As shown in the example above, the grammar for the rules are simple. Also, if a gate in the input gate set already appears in the target set, you don't have to provide a rule for it.
-
-#### Optimization
-
-You can use the API:
-```cpp
-std::shared_ptr<Graph> optimize(Context *ctx,
-                                const std::string &equiv_file_name,
-                                const std::string &circuit_name,
-                                bool print_message,
-                                std::function<float(Graph *)> cost_function = nullptr,
-                                double cost_upper_bound = -1 /*default = current cost * 1.05*/,
-                                int timeout = 3600 /*1 hour*/);
-```
-
-Explanation for some of the parameters:
-- `equiv_file_name`: The file name of the ECC set.
-- `circuit_name`: The name of the circuit, which will be printed with the intermediate result.
-- `print_message`: Print debug message to the console.
-- `cost_function`: The cost function used in the search.
-- `cost_upper_bound`: Maximum circuit cost to be searched during optimization.
-- `timeout`: Timeout for optimization in seconds.
-
-Usage example:
-```c++
-auto graph_optimized = graph->optimize(&context,
-                                       equiv_file_name,
-                                       circuit_name,
-                                       /*print_message=*/true,
-                                       [] (Graph *graph) { return graph->total_cost(); },
-                                       /*cost_upper_bound=*/-1,
-                                       /*timeout=*/10);
-```
-
-You can also use the deprecated API for now:
-``` cpp
-Graph::optimize_legacy(float alpha, int budget, bool print_subst, Context *ctx,
-                       const std::string &equiv_file_name, bool use_simulated_annealing,
-                       bool enable_early_stop, bool use_rotation_merging_in_searching,
-                       GateType target_rotation, std::string circuit_name = "",
-                       int timeout = 86400 /*1 day*/);
-```
-
-Explanation for some of the parameters:
-
-- `print_subst`: Deprecated will be removed in future version.
-- `equiv_file_name`: The file name of the ECC set.
-- `use_simulated_annealing`: Use simulated annealing in searching.
-- `use_rotation_merging_in_searching`: Enable rotation merging in each iteration of the back-track searching.
-- `target_rotation`: The target rotation used if you enable rotation merging in search.
-- `circuit_name`: The name of the circuit, which will be printed with the intermediate result.
-- `timeout`: Timeout for optimization in seconds.
-
-## Repository Organization
-
-See [code structure](CODE_STRUCTURE.md) for more information about the organization of the Quartz code base.
-
-## Contributing
-
-Please let us know if you encounter any bugs or have any suggestions by [submitting an issue](https://github.com/quantum-compiler/quartz/issues).
-
-We welcome all contributions to Quartz from bug fixes to new features and extensions.
-
-Please follow [developer guidance](doc/dev_setup.md).
-
-Please subscribe to the Quartz users mailing list (TODO)
-
-## Citations
-
-* Mingkuan Xu, Zikun Li, Oded Padon, Sina Lin, Jessica Pointing, Auguste Hirth, Henry Ma, Jens Palsberg, Alex Aiken, Umut A. Acar, and Zhihao Jia. [Quartz: Superoptimization of Quantum Circuits](https://arxiv.org/abs/2204.09033). In Proceedings of the Conference on Programming Language Design and Implementation (PLDI), June 2022.
-
-
-## License
-
-Quartz uses Apache License 2.0.
+分析数据仅覆盖已保存的成功轨迹，不能单独证明强化学习有效。当前随机对照仍在运行，其最终结果未包含在本仓库的已完成记录中。

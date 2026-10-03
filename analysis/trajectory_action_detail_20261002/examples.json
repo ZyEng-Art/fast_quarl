@@ -1,0 +1,25 @@
+[
+  {
+    "circuit": "barenco_tof_3",
+    "path": "38_4",
+    "action_A": 2,
+    "action_B": 3,
+    "xfer_A": 2909,
+    "xfer_B": 37,
+    "shared_output_nodes": [
+      48,
+      49
+    ]
+  },
+  {
+    "circuit": "gf2^6_mult",
+    "path": "370_2",
+    "action_A": 269,
+    "action_B": 270,
+    "xfer_A": 3424,
+    "xfer_B": 1469,
+    "shared_output_nodes": [
+      1016
+    ]
+  }
+]

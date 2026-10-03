@@ -54,9 +54,9 @@ class QConv(nn.Module):
             raise NotImplementedError
         return {'h_N': h}
 
-    def forward(self, g, h, topology=None):
+    def forward(self, g, h):
         if tensor_graph_backend():
-            return self.forward_tensors(g, h, topology)
+            return self.forward_tensors(g, h)
         g.ndata['h'] = h
         g.update_all(self.message_func, self.reduce_func)
         h_N = g.ndata['h_N']
@@ -66,22 +66,19 @@ class QConv(nn.Module):
             h = F.normalize(h, p=2, dim=-1)
         return h
 
-    def forward_tensors(self, g, h, topology=None):
-        if topology is None:
-            src, dst = g.edges(order='eid')
-            src, dst = src.to(h.device), dst.to(h.device)
-            weights = torch.stack(
-                [g.edata['src_idx'], g.edata['dst_idx'], g.edata['reversed']], dim=1
-            ).to(device=h.device, dtype=h.dtype)
-            degree = g.in_degrees().to(device=h.device, dtype=h.dtype) if self.aggregator_type == 'mean' else None
-        else:
-            src, dst, weights, degree = topology
-            weights = weights.to(dtype=h.dtype)
+    def forward_tensors(self, g, h):
+        src, dst = g.edges(order='eid')
+        src = src.to(h.device)
+        dst = dst.to(h.device)
+        weights = torch.stack(
+            [g.edata['src_idx'], g.edata['dst_idx'], g.edata['reversed']], dim=1
+        ).to(device=h.device, dtype=h.dtype)
         messages = self.aggregator(torch.cat([h[src], weights], dim=1))
         h_N = h.new_zeros((g.num_nodes(), messages.shape[1]))
         if self.aggregator_type in ('sum', 'mean'):
             h_N = h_N.index_add(0, dst, messages)
             if self.aggregator_type == 'mean':
+                degree = g.in_degrees().to(device=h.device, dtype=h.dtype)
                 h_N = h_N / degree.clamp_min(1).unsqueeze(1)
         elif self.aggregator_type == 'max':
             h_N = h_N.scatter_reduce(
@@ -118,14 +115,8 @@ class QGNN(nn.Module):
     def forward(self, g: dgl.DGLGraph) -> torch.Tensor:
         if tensor_graph_backend():
             h = self.embedding(g.ndata['gate_type'].to(self.embedding.weight.device))
-            src, dst = g.edges(order='eid')
-            topology = (
-                src.to(h.device), dst.to(h.device),
-                torch.stack([g.edata['src_idx'], g.edata['dst_idx'], g.edata['reversed']], dim=1).to(device=h.device, dtype=h.dtype),
-                g.in_degrees().to(device=h.device, dtype=h.dtype) if any(conv.aggregator_type == 'mean' for conv in self.convs) else None,
-            )
             for conv in self.convs:
-                h = conv(g, h, topology)
+                h = conv(g, h)
             return h
         g.ndata['h'] = self.embedding(g.ndata['gate_type'])
         w = torch.cat(

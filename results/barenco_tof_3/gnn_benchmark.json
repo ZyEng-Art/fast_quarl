@@ -1,0 +1,151 @@
+{
+  "device": "cuda:2",
+  "threads": 4,
+  "scope": "GNN forward or forward+backward only; no candidate matching, PPO actor/critic, optimizer or search-quality measurement",
+  "results": [
+    {
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": false,
+      "output_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "seconds": {
+        "baseline": 0.0038737933849915863,
+        "optimized": 0.0024269408080726863
+      },
+      "speedup": 1.5961631087607338,
+      "repetitions": {
+        "baseline": [
+          0.0038737933849915863,
+          0.0038493558997288345,
+          0.004036363516934216
+        ],
+        "optimized": [
+          0.0024247342022135853,
+          0.0024337915936484935,
+          0.0024269408080726863
+        ]
+      }
+    },
+    {
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": true,
+      "output_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "seconds": {
+        "baseline": 0.007373055000789464,
+        "optimized": 0.005826295493170619
+      },
+      "speedup": 1.265479069750565,
+      "repetitions": {
+        "baseline": [
+          0.007373055000789464,
+          0.007357356394641102,
+          0.007378212315961719
+        ],
+        "optimized": [
+          0.005817375099286437,
+          0.005826295493170619,
+          0.005845441110432148
+        ]
+      }
+    },
+    {
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": false,
+      "output_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "seconds": {
+        "baseline": 0.004485259600915015,
+        "optimized": 0.0026396097848191856
+      },
+      "speedup": 1.6992131286641132,
+      "repetitions": {
+        "baseline": [
+          0.004490365809760988,
+          0.004485259600915015,
+          0.004432805790565908
+        ],
+        "optimized": [
+          0.0026244011009112,
+          0.0026396097848191856,
+          0.0026460357010364534
+        ]
+      }
+    },
+    {
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": true,
+      "output_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "seconds": {
+        "baseline": 0.008037216705270111,
+        "optimized": 0.006081875716336072
+      },
+      "speedup": 1.3215029507561202,
+      "repetitions": {
+        "baseline": [
+          0.008037216705270111,
+          0.00807649279013276,
+          0.008000577008351684
+        ],
+        "optimized": [
+          0.006442057108506561,
+          0.006081875716336072,
+          0.0060700178146362305
+        ]
+      }
+    },
+    {
+      "batch": 256,
+      "nodes": 11776,
+      "forward_backward": false,
+      "output_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "seconds": {
+        "baseline": 0.010479599493555725,
+        "optimized": 0.007885243091732264
+      },
+      "speedup": 1.3290141307810361,
+      "repetitions": {
+        "baseline": [
+          0.01047636871226132,
+          0.010481099504977465,
+          0.010479599493555725
+        ],
+        "optimized": [
+          0.007885243091732264,
+          0.007886214996688068,
+          0.007884112396277487
+        ]
+      }
+    },
+    {
+      "batch": 256,
+      "nodes": 11776,
+      "forward_backward": true,
+      "output_max_abs_error": 0.0,
+      "gradient_max_abs_error": 0.0,
+      "seconds": {
+        "baseline": 0.02026308679487556,
+        "optimized": 0.017526411288417875
+      },
+      "speedup": 1.156145799697522,
+      "repetitions": {
+        "baseline": [
+          0.020226809894666076,
+          0.02027663041371852,
+          0.02026308679487556
+        ],
+        "optimized": [
+          0.017526411288417875,
+          0.017514937091618776,
+          0.01753324959427118
+        ]
+      }
+    }
+  ]
+}

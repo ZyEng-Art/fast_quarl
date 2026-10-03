@@ -1,0 +1,1211 @@
+{
+  "seconds": 516.5712244510651,
+  "metadata": {
+    "context_xfers": 4701,
+    "ecc_file": "nam_ecc.json",
+    "method": "native binding trace with persistent GUIDs, each action replayed and native successor hash checked against saved QASM",
+    "anchor_recovery": "prefer saved ID if valid; otherwise find anchor reproducing saved successor; alternative anchors are not exhaustively checked",
+    "normalization": "eliminate_rotation=True; declared and surviving destination gates separately recorded",
+    "relation": "match-source overlap with surviving created GUIDs; graph adjacency and shared qubits shown separately"
+  },
+  "errors": [],
+  "datasets": [
+    {
+      "name": "barenco_tof_3",
+      "paths": 52,
+      "actions": 935,
+      "pairs": 883,
+      "categories": {
+        "same_qubits_elsewhere": 204,
+        "uses_previous_output": 559,
+        "adjacent_region": 102,
+        "disjoint_qubits": 18
+      },
+      "direct_output_anchor_pairs": 408,
+      "path_counts": [
+        {
+          "id": "38_0",
+          "actions": 38,
+          "categories": {
+            "same_qubits_elsewhere": 9,
+            "uses_previous_output": 23,
+            "adjacent_region": 5
+          }
+        },
+        {
+          "id": "38_3",
+          "actions": 16,
+          "categories": {
+            "uses_previous_output": 8,
+            "same_qubits_elsewhere": 2,
+            "adjacent_region": 5
+          }
+        },
+        {
+          "id": "38_4",
+          "actions": 4,
+          "categories": {
+            "uses_previous_output": 3
+          }
+        },
+        {
+          "id": "38_5",
+          "actions": 58,
+          "categories": {
+            "uses_previous_output": 36,
+            "disjoint_qubits": 1,
+            "adjacent_region": 9,
+            "same_qubits_elsewhere": 11
+          }
+        },
+        {
+          "id": "39_0",
+          "actions": 4,
+          "categories": {
+            "uses_previous_output": 2,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "39_1",
+          "actions": 19,
+          "categories": {
+            "adjacent_region": 3,
+            "same_qubits_elsewhere": 2,
+            "uses_previous_output": 13
+          }
+        },
+        {
+          "id": "39_2",
+          "actions": 4,
+          "categories": {
+            "uses_previous_output": 2,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "39_3",
+          "actions": 9,
+          "categories": {
+            "uses_previous_output": 5,
+            "adjacent_region": 3
+          }
+        },
+        {
+          "id": "39_4",
+          "actions": 34,
+          "categories": {
+            "uses_previous_output": 20,
+            "same_qubits_elsewhere": 4,
+            "adjacent_region": 9
+          }
+        },
+        {
+          "id": "39_5",
+          "actions": 34,
+          "categories": {
+            "same_qubits_elsewhere": 3,
+            "uses_previous_output": 26,
+            "disjoint_qubits": 1,
+            "adjacent_region": 3
+          }
+        },
+        {
+          "id": "40_2",
+          "actions": 4,
+          "categories": {
+            "uses_previous_output": 2,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "41_2",
+          "actions": 38,
+          "categories": {
+            "uses_previous_output": 29,
+            "adjacent_region": 4,
+            "same_qubits_elsewhere": 4
+          }
+        },
+        {
+          "id": "41_3",
+          "actions": 34,
+          "categories": {
+            "uses_previous_output": 20,
+            "same_qubits_elsewhere": 9,
+            "adjacent_region": 4
+          }
+        },
+        {
+          "id": "42_2",
+          "actions": 36,
+          "categories": {
+            "uses_previous_output": 28,
+            "adjacent_region": 3,
+            "same_qubits_elsewhere": 4
+          }
+        },
+        {
+          "id": "43_3",
+          "actions": 32,
+          "categories": {
+            "uses_previous_output": 18,
+            "same_qubits_elsewhere": 9,
+            "adjacent_region": 4
+          }
+        },
+        {
+          "id": "44_2",
+          "actions": 33,
+          "categories": {
+            "uses_previous_output": 25,
+            "adjacent_region": 3,
+            "same_qubits_elsewhere": 4
+          }
+        },
+        {
+          "id": "44_3",
+          "actions": 30,
+          "categories": {
+            "uses_previous_output": 17,
+            "same_qubits_elsewhere": 8,
+            "adjacent_region": 4
+          }
+        },
+        {
+          "id": "45_2",
+          "actions": 28,
+          "categories": {
+            "uses_previous_output": 22,
+            "adjacent_region": 2,
+            "same_qubits_elsewhere": 3
+          }
+        },
+        {
+          "id": "45_3",
+          "actions": 26,
+          "categories": {
+            "uses_previous_output": 15,
+            "same_qubits_elsewhere": 6,
+            "adjacent_region": 4
+          }
+        },
+        {
+          "id": "46_0",
+          "actions": 1,
+          "categories": {}
+        },
+        {
+          "id": "46_1",
+          "actions": 5,
+          "categories": {
+            "uses_previous_output": 3,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "46_2",
+          "actions": 14,
+          "categories": {
+            "uses_previous_output": 9,
+            "same_qubits_elsewhere": 2,
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "46_3",
+          "actions": 10,
+          "categories": {
+            "uses_previous_output": 6,
+            "same_qubits_elsewhere": 1,
+            "disjoint_qubits": 1,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "46_4",
+          "actions": 2,
+          "categories": {
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "46_5",
+          "actions": 3,
+          "categories": {
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "47_0",
+          "actions": 3,
+          "categories": {
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "47_1",
+          "actions": 12,
+          "categories": {
+            "uses_previous_output": 10,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "47_2",
+          "actions": 8,
+          "categories": {
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 2,
+            "disjoint_qubits": 1
+          }
+        },
+        {
+          "id": "47_3",
+          "actions": 8,
+          "categories": {
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 2,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "47_4",
+          "actions": 6,
+          "categories": {
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "47_5",
+          "actions": 6,
+          "categories": {
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "48_0",
+          "actions": 18,
+          "categories": {
+            "same_qubits_elsewhere": 7,
+            "uses_previous_output": 10
+          }
+        },
+        {
+          "id": "48_1",
+          "actions": 2,
+          "categories": {
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "48_2",
+          "actions": 19,
+          "categories": {
+            "uses_previous_output": 8,
+            "disjoint_qubits": 1,
+            "same_qubits_elsewhere": 5,
+            "adjacent_region": 4
+          }
+        },
+        {
+          "id": "50_0",
+          "actions": 10,
+          "categories": {
+            "same_qubits_elsewhere": 4,
+            "uses_previous_output": 5
+          }
+        },
+        {
+          "id": "50_1",
+          "actions": 19,
+          "categories": {
+            "uses_previous_output": 9,
+            "same_qubits_elsewhere": 6,
+            "disjoint_qubits": 1,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "50_2",
+          "actions": 16,
+          "categories": {
+            "uses_previous_output": 7,
+            "disjoint_qubits": 1,
+            "same_qubits_elsewhere": 5,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "50_4",
+          "actions": 30,
+          "categories": {
+            "uses_previous_output": 16,
+            "adjacent_region": 1,
+            "same_qubits_elsewhere": 11,
+            "disjoint_qubits": 1
+          }
+        },
+        {
+          "id": "52_0",
+          "actions": 9,
+          "categories": {
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 4
+          }
+        },
+        {
+          "id": "52_1",
+          "actions": 10,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "uses_previous_output": 3,
+            "disjoint_qubits": 1
+          }
+        },
+        {
+          "id": "52_2",
+          "actions": 7,
+          "categories": {
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 1,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "52_4",
+          "actions": 24,
+          "categories": {
+            "uses_previous_output": 13,
+            "adjacent_region": 1,
+            "same_qubits_elsewhere": 8,
+            "disjoint_qubits": 1
+          }
+        },
+        {
+          "id": "52_5",
+          "actions": 35,
+          "categories": {
+            "same_qubits_elsewhere": 13,
+            "uses_previous_output": 18,
+            "adjacent_region": 3
+          }
+        },
+        {
+          "id": "53_1",
+          "actions": 7,
+          "categories": {
+            "same_qubits_elsewhere": 3,
+            "uses_previous_output": 3
+          }
+        },
+        {
+          "id": "53_4",
+          "actions": 23,
+          "categories": {
+            "uses_previous_output": 13,
+            "adjacent_region": 1,
+            "same_qubits_elsewhere": 7,
+            "disjoint_qubits": 1
+          }
+        },
+        {
+          "id": "53_5",
+          "actions": 25,
+          "categories": {
+            "same_qubits_elsewhere": 10,
+            "uses_previous_output": 12,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "54_2",
+          "actions": 15,
+          "categories": {
+            "uses_previous_output": 8,
+            "disjoint_qubits": 2,
+            "adjacent_region": 3,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "54_3",
+          "actions": 25,
+          "categories": {
+            "uses_previous_output": 13,
+            "adjacent_region": 6,
+            "same_qubits_elsewhere": 5
+          }
+        },
+        {
+          "id": "54_5",
+          "actions": 28,
+          "categories": {
+            "same_qubits_elsewhere": 7,
+            "uses_previous_output": 20
+          }
+        },
+        {
+          "id": "55_0",
+          "actions": 28,
+          "categories": {
+            "uses_previous_output": 15,
+            "same_qubits_elsewhere": 8,
+            "disjoint_qubits": 3,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "55_3",
+          "actions": 24,
+          "categories": {
+            "uses_previous_output": 13,
+            "adjacent_region": 5,
+            "same_qubits_elsewhere": 5
+          }
+        },
+        {
+          "id": "56_4",
+          "actions": 2,
+          "categories": {
+            "uses_previous_output": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "gf2^6_mult",
+      "paths": 81,
+      "actions": 2578,
+      "pairs": 2497,
+      "categories": {
+        "uses_previous_output": 1124,
+        "disjoint_qubits": 648,
+        "same_qubits_elsewhere": 513,
+        "adjacent_region": 212
+      },
+      "direct_output_anchor_pairs": 922,
+      "path_counts": [
+        {
+          "id": "370_2",
+          "actions": 271,
+          "categories": {
+            "uses_previous_output": 184,
+            "disjoint_qubits": 14,
+            "same_qubits_elsewhere": 22,
+            "adjacent_region": 50
+          }
+        },
+        {
+          "id": "371_5",
+          "actions": 261,
+          "categories": {
+            "adjacent_region": 17,
+            "disjoint_qubits": 90,
+            "uses_previous_output": 124,
+            "same_qubits_elsewhere": 29
+          }
+        },
+        {
+          "id": "373_1",
+          "actions": 179,
+          "categories": {
+            "same_qubits_elsewhere": 51,
+            "uses_previous_output": 61,
+            "disjoint_qubits": 49,
+            "adjacent_region": 17
+          }
+        },
+        {
+          "id": "374_2",
+          "actions": 233,
+          "categories": {
+            "uses_previous_output": 93,
+            "disjoint_qubits": 61,
+            "same_qubits_elsewhere": 52,
+            "adjacent_region": 26
+          }
+        },
+        {
+          "id": "375_0",
+          "actions": 181,
+          "categories": {
+            "uses_previous_output": 101,
+            "disjoint_qubits": 25,
+            "same_qubits_elsewhere": 36,
+            "adjacent_region": 18
+          }
+        },
+        {
+          "id": "376_0",
+          "actions": 103,
+          "categories": {
+            "uses_previous_output": 34,
+            "adjacent_region": 9,
+            "disjoint_qubits": 36,
+            "same_qubits_elsewhere": 23
+          }
+        },
+        {
+          "id": "377_2",
+          "actions": 37,
+          "categories": {
+            "uses_previous_output": 19,
+            "disjoint_qubits": 3,
+            "same_qubits_elsewhere": 12,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "378_0",
+          "actions": 79,
+          "categories": {
+            "uses_previous_output": 26,
+            "adjacent_region": 9,
+            "disjoint_qubits": 27,
+            "same_qubits_elsewhere": 16
+          }
+        },
+        {
+          "id": "378_2",
+          "actions": 25,
+          "categories": {
+            "uses_previous_output": 16,
+            "disjoint_qubits": 2,
+            "same_qubits_elsewhere": 4,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "378_3",
+          "actions": 5,
+          "categories": {
+            "same_qubits_elsewhere": 2,
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "378_4",
+          "actions": 34,
+          "categories": {
+            "same_qubits_elsewhere": 9,
+            "disjoint_qubits": 12,
+            "uses_previous_output": 12
+          }
+        },
+        {
+          "id": "378_5",
+          "actions": 28,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "uses_previous_output": 9,
+            "disjoint_qubits": 12,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "379_0",
+          "actions": 7,
+          "categories": {
+            "disjoint_qubits": 4,
+            "adjacent_region": 1,
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "379_3",
+          "actions": 19,
+          "categories": {
+            "disjoint_qubits": 8,
+            "uses_previous_output": 7,
+            "same_qubits_elsewhere": 3
+          }
+        },
+        {
+          "id": "379_4",
+          "actions": 31,
+          "categories": {
+            "uses_previous_output": 16,
+            "disjoint_qubits": 6,
+            "same_qubits_elsewhere": 4,
+            "adjacent_region": 4
+          }
+        },
+        {
+          "id": "379_5",
+          "actions": 23,
+          "categories": {
+            "disjoint_qubits": 5,
+            "same_qubits_elsewhere": 6,
+            "uses_previous_output": 9,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "380_3",
+          "actions": 32,
+          "categories": {
+            "disjoint_qubits": 10,
+            "uses_previous_output": 13,
+            "same_qubits_elsewhere": 7,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "381_1",
+          "actions": 37,
+          "categories": {
+            "uses_previous_output": 13,
+            "disjoint_qubits": 14,
+            "same_qubits_elsewhere": 6,
+            "adjacent_region": 3
+          }
+        },
+        {
+          "id": "382_1",
+          "actions": 73,
+          "categories": {
+            "disjoint_qubits": 19,
+            "uses_previous_output": 35,
+            "same_qubits_elsewhere": 15,
+            "adjacent_region": 3
+          }
+        },
+        {
+          "id": "382_2",
+          "actions": 41,
+          "categories": {
+            "uses_previous_output": 13,
+            "same_qubits_elsewhere": 7,
+            "disjoint_qubits": 17,
+            "adjacent_region": 3
+          }
+        },
+        {
+          "id": "383_0",
+          "actions": 43,
+          "categories": {
+            "adjacent_region": 1,
+            "uses_previous_output": 21,
+            "disjoint_qubits": 9,
+            "same_qubits_elsewhere": 11
+          }
+        },
+        {
+          "id": "383_1",
+          "actions": 53,
+          "categories": {
+            "disjoint_qubits": 14,
+            "uses_previous_output": 26,
+            "same_qubits_elsewhere": 11,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "383_2",
+          "actions": 33,
+          "categories": {
+            "uses_previous_output": 12,
+            "same_qubits_elsewhere": 5,
+            "disjoint_qubits": 13,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "383_5",
+          "actions": 89,
+          "categories": {
+            "uses_previous_output": 50,
+            "disjoint_qubits": 13,
+            "same_qubits_elsewhere": 10,
+            "adjacent_region": 15
+          }
+        },
+        {
+          "id": "384_2",
+          "actions": 62,
+          "categories": {
+            "same_qubits_elsewhere": 10,
+            "disjoint_qubits": 19,
+            "uses_previous_output": 31,
+            "adjacent_region": 1
+          }
+        },
+        {
+          "id": "384_4",
+          "actions": 65,
+          "categories": {
+            "disjoint_qubits": 17,
+            "uses_previous_output": 29,
+            "same_qubits_elsewhere": 9,
+            "adjacent_region": 9
+          }
+        },
+        {
+          "id": "385_2",
+          "actions": 30,
+          "categories": {
+            "uses_previous_output": 13,
+            "same_qubits_elsewhere": 3,
+            "disjoint_qubits": 11,
+            "adjacent_region": 2
+          }
+        },
+        {
+          "id": "385_3",
+          "actions": 30,
+          "categories": {
+            "uses_previous_output": 15,
+            "disjoint_qubits": 6,
+            "same_qubits_elsewhere": 5,
+            "adjacent_region": 3
+          }
+        },
+        {
+          "id": "386_1",
+          "actions": 8,
+          "categories": {
+            "adjacent_region": 2,
+            "uses_previous_output": 3,
+            "same_qubits_elsewhere": 2
+          }
+        },
+        {
+          "id": "386_2",
+          "actions": 10,
+          "categories": {
+            "uses_previous_output": 3,
+            "same_qubits_elsewhere": 3,
+            "disjoint_qubits": 3
+          }
+        },
+        {
+          "id": "386_3",
+          "actions": 30,
+          "categories": {
+            "uses_previous_output": 12,
+            "adjacent_region": 2,
+            "disjoint_qubits": 8,
+            "same_qubits_elsewhere": 7
+          }
+        },
+        {
+          "id": "386_4",
+          "actions": 15,
+          "categories": {
+            "uses_previous_output": 4,
+            "adjacent_region": 1,
+            "same_qubits_elsewhere": 3,
+            "disjoint_qubits": 6
+          }
+        },
+        {
+          "id": "386_5",
+          "actions": 17,
+          "categories": {
+            "disjoint_qubits": 6,
+            "uses_previous_output": 8,
+            "same_qubits_elsewhere": 2
+          }
+        },
+        {
+          "id": "387_0",
+          "actions": 5,
+          "categories": {
+            "disjoint_qubits": 3,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "387_3",
+          "actions": 15,
+          "categories": {
+            "uses_previous_output": 6,
+            "same_qubits_elsewhere": 3,
+            "disjoint_qubits": 5
+          }
+        },
+        {
+          "id": "388_0",
+          "actions": 9,
+          "categories": {
+            "disjoint_qubits": 3,
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "388_1",
+          "actions": 2,
+          "categories": {
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "388_2",
+          "actions": 9,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "uses_previous_output": 1,
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "388_3",
+          "actions": 7,
+          "categories": {
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 1,
+            "disjoint_qubits": 1
+          }
+        },
+        {
+          "id": "388_4",
+          "actions": 6,
+          "categories": {
+            "uses_previous_output": 2,
+            "disjoint_qubits": 3
+          }
+        },
+        {
+          "id": "388_5",
+          "actions": 18,
+          "categories": {
+            "uses_previous_output": 9,
+            "disjoint_qubits": 4,
+            "same_qubits_elsewhere": 4
+          }
+        },
+        {
+          "id": "389_0",
+          "actions": 4,
+          "categories": {
+            "disjoint_qubits": 3
+          }
+        },
+        {
+          "id": "389_1",
+          "actions": 5,
+          "categories": {
+            "uses_previous_output": 2,
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "389_2",
+          "actions": 3,
+          "categories": {
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "389_3",
+          "actions": 2,
+          "categories": {
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "389_4",
+          "actions": 3,
+          "categories": {
+            "same_qubits_elsewhere": 1,
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "389_5",
+          "actions": 13,
+          "categories": {
+            "uses_previous_output": 6,
+            "disjoint_qubits": 3,
+            "same_qubits_elsewhere": 3
+          }
+        },
+        {
+          "id": "390_0",
+          "actions": 16,
+          "categories": {
+            "same_qubits_elsewhere": 6,
+            "adjacent_region": 1,
+            "uses_previous_output": 6,
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "390_2",
+          "actions": 6,
+          "categories": {
+            "disjoint_qubits": 1,
+            "uses_previous_output": 3,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "390_5",
+          "actions": 7,
+          "categories": {
+            "adjacent_region": 1,
+            "uses_previous_output": 1,
+            "disjoint_qubits": 1,
+            "same_qubits_elsewhere": 3
+          }
+        },
+        {
+          "id": "391_1",
+          "actions": 10,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "uses_previous_output": 4
+          }
+        },
+        {
+          "id": "391_3",
+          "actions": 15,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "disjoint_qubits": 6,
+            "uses_previous_output": 3
+          }
+        },
+        {
+          "id": "391_4",
+          "actions": 16,
+          "categories": {
+            "disjoint_qubits": 8,
+            "uses_previous_output": 5,
+            "same_qubits_elsewhere": 2
+          }
+        },
+        {
+          "id": "391_5",
+          "actions": 13,
+          "categories": {
+            "disjoint_qubits": 3,
+            "same_qubits_elsewhere": 7,
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "392_0",
+          "actions": 15,
+          "categories": {
+            "same_qubits_elsewhere": 6,
+            "adjacent_region": 1,
+            "uses_previous_output": 5,
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "392_2",
+          "actions": 5,
+          "categories": {
+            "disjoint_qubits": 1,
+            "uses_previous_output": 2,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "393_1",
+          "actions": 9,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "uses_previous_output": 3
+          }
+        },
+        {
+          "id": "393_3",
+          "actions": 14,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "disjoint_qubits": 6,
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "393_4",
+          "actions": 15,
+          "categories": {
+            "disjoint_qubits": 8,
+            "uses_previous_output": 4,
+            "same_qubits_elsewhere": 2
+          }
+        },
+        {
+          "id": "393_5",
+          "actions": 12,
+          "categories": {
+            "disjoint_qubits": 3,
+            "same_qubits_elsewhere": 7,
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "394_0",
+          "actions": 14,
+          "categories": {
+            "same_qubits_elsewhere": 6,
+            "adjacent_region": 1,
+            "uses_previous_output": 4,
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "394_2",
+          "actions": 4,
+          "categories": {
+            "disjoint_qubits": 1,
+            "uses_previous_output": 1,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "395_1",
+          "actions": 8,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "395_3",
+          "actions": 13,
+          "categories": {
+            "same_qubits_elsewhere": 5,
+            "disjoint_qubits": 6,
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "395_4",
+          "actions": 14,
+          "categories": {
+            "disjoint_qubits": 8,
+            "uses_previous_output": 3,
+            "same_qubits_elsewhere": 2
+          }
+        },
+        {
+          "id": "395_5",
+          "actions": 11,
+          "categories": {
+            "disjoint_qubits": 3,
+            "same_qubits_elsewhere": 7
+          }
+        },
+        {
+          "id": "396_0",
+          "actions": 6,
+          "categories": {
+            "same_qubits_elsewhere": 1,
+            "adjacent_region": 1,
+            "uses_previous_output": 2,
+            "disjoint_qubits": 1
+          }
+        },
+        {
+          "id": "396_2",
+          "actions": 15,
+          "categories": {
+            "disjoint_qubits": 4,
+            "same_qubits_elsewhere": 5,
+            "uses_previous_output": 5
+          }
+        },
+        {
+          "id": "396_4",
+          "actions": 14,
+          "categories": {
+            "same_qubits_elsewhere": 7,
+            "disjoint_qubits": 2,
+            "uses_previous_output": 4
+          }
+        },
+        {
+          "id": "397_0",
+          "actions": 4,
+          "categories": {
+            "disjoint_qubits": 2,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "397_1",
+          "actions": 2,
+          "categories": {
+            "uses_previous_output": 1
+          }
+        },
+        {
+          "id": "397_2",
+          "actions": 7,
+          "categories": {
+            "uses_previous_output": 2,
+            "disjoint_qubits": 2,
+            "same_qubits_elsewhere": 2
+          }
+        },
+        {
+          "id": "397_3",
+          "actions": 9,
+          "categories": {
+            "uses_previous_output": 2,
+            "same_qubits_elsewhere": 4,
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "397_4",
+          "actions": 8,
+          "categories": {
+            "same_qubits_elsewhere": 2,
+            "disjoint_qubits": 3,
+            "uses_previous_output": 2
+          }
+        },
+        {
+          "id": "397_5",
+          "actions": 3,
+          "categories": {
+            "disjoint_qubits": 1,
+            "same_qubits_elsewhere": 1
+          }
+        },
+        {
+          "id": "399_0",
+          "actions": 1,
+          "categories": {}
+        },
+        {
+          "id": "399_1",
+          "actions": 1,
+          "categories": {}
+        },
+        {
+          "id": "399_2",
+          "actions": 3,
+          "categories": {
+            "disjoint_qubits": 2
+          }
+        },
+        {
+          "id": "399_3",
+          "actions": 1,
+          "categories": {}
+        },
+        {
+          "id": "399_4",
+          "actions": 1,
+          "categories": {}
+        },
+        {
+          "id": "399_5",
+          "actions": 1,
+          "categories": {}
+        }
+      ]
+    }
+  ]
+}

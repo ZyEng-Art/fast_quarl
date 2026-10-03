@@ -1,0 +1,51 @@
+{
+  "elapsed_seconds": 9004.64078092575,
+  "first_target_seconds": 9004.640183925629,
+  "best_raw": 35,
+  "best_rm": 35,
+  "equivalent": true,
+  "milestones": [
+    {
+      "seconds": 0.0045318603515625,
+      "source": "initial",
+      "raw_gates": 46,
+      "rm_gates": 46,
+      "equivalent": true
+    },
+    {
+      "seconds": 170.1931619644165,
+      "source": "training",
+      "raw_gates": 40,
+      "rm_gates": 40,
+      "equivalent": true
+    },
+    {
+      "seconds": 930.9835903644562,
+      "source": "search",
+      "raw_gates": 39,
+      "rm_gates": 39,
+      "equivalent": true
+    },
+    {
+      "seconds": 1061.1153962612152,
+      "source": "search",
+      "raw_gates": 38,
+      "rm_gates": 38,
+      "equivalent": true
+    },
+    {
+      "seconds": 8674.274561405182,
+      "source": "search",
+      "raw_gates": 36,
+      "rm_gates": 36,
+      "equivalent": true
+    },
+    {
+      "seconds": 9004.640183925629,
+      "source": "search",
+      "raw_gates": 35,
+      "rm_gates": 35,
+      "equivalent": true
+    }
+  ]
+}

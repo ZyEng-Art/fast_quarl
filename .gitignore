@@ -68,3 +68,10 @@ build/*
 # XPU development artifacts
 build-xpu/
 .xpu-native/
+
+# Local experiment state
+runs/
+*.pt
+.venv/
+!results/**/*.json
+!analysis/**/*.json

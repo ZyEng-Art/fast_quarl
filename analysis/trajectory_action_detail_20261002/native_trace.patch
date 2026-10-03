@@ -1,0 +1,170 @@
+--- a/src/quartz/tasograph/tasograph.cpp
++++ b/src/quartz/tasograph/tasograph.cpp
+@@ -2480,10 +2480,42 @@
+   return new_graph;
+ }
+
++std::vector<size_t> Graph::xfer_binding(GraphXfer *xfer, Op op) const {
++  std::deque<std::pair<OpX *, Op>> matched;
++  std::vector<size_t> guids;
++  if (!_pattern_matching(xfer, op, matched))
++    return guids;
++  if (_loop_check_after_matching(xfer)) {
++    for (const auto *opx : xfer->srcOps)
++      if (opx->mapOp.ptr->is_quantum_gate())
++        guids.push_back(opx->mapOp.guid);
++  }
++  while (!matched.empty()) {
++    auto pair = matched.back();
++    matched.pop_back();
++    xfer->unmatch(pair.first, pair.second, this);
++  }
++  return guids;
++}
++
+ std::pair<std::shared_ptr<Graph>, std::vector<int>>
+ Graph::apply_xfer_and_track_node(GraphXfer *xfer, Op op,
+                                  bool eliminate_rotation,
+                                  int predecessor_layers) const {
++  std::vector<size_t> source_guids, destination_guids;
++  return apply_xfer_and_track_bindings(xfer, op, eliminate_rotation,
++                                      predecessor_layers, source_guids,
++                                      destination_guids);
++}
++
++std::pair<std::shared_ptr<Graph>, std::vector<int>>
++Graph::apply_xfer_and_track_bindings(GraphXfer *xfer, Op op,
++                                    bool eliminate_rotation,
++                                    int predecessor_layers,
++                                    std::vector<size_t> &source_guids,
++                                    std::vector<size_t> &destination_guids) const {
++  source_guids.clear();
++  destination_guids.clear();
+   // When eliminate_rotation is true, this function will eliminate all rotation
+   // whose parameters are all 0
+   std::deque<std::pair<OpX *, Op>> matched_opx_op_pairs_dq;
+@@ -2503,6 +2535,13 @@
+     }
+   }
+   if (success) {
++    // Preserve circuit instruction order, not unordered-map or GUID order.
++    for (const auto *opx : xfer->srcOps)
++      if (opx->mapOp.ptr->is_quantum_gate())
++        source_guids.push_back(opx->mapOp.guid);
++    for (const auto *opx : xfer->dstOps)
++      if (opx->mapOp.ptr->is_quantum_gate())
++        destination_guids.push_back(opx->mapOp.guid);
+     std::unordered_set<Op, OpHash> op_set;
+     // The destination graph in xfer is not an empty graph
+     // Add all wires in the destination graph to op_set
+--- a/src/quartz/tasograph/tasograph.h
++++ b/src/quartz/tasograph/tasograph.h
+@@ -297,6 +297,12 @@
+   apply_xfer_and_track_node(GraphXfer *xfer, Op op,
+                             bool eliminate_rotation = false,
+                             int predecessor_layers = 1) const;
++  std::vector<size_t> xfer_binding(GraphXfer *xfer, Op op) const;
++  std::pair<std::shared_ptr<Graph>, std::vector<int>>
++  apply_xfer_and_track_bindings(GraphXfer *xfer, Op op,
++                               bool eliminate_rotation, int predecessor_layers,
++                               std::vector<size_t> &source_guids,
++                               std::vector<size_t> &destination_guids) const;
+   void all_ops(std::vector<Op> &ops);
+   void all_edges(std::vector<Edge> &edges);
+   void topology_order_ops(std::vector<Op> &ops) const;
+--- a/python/quartz/_cython/CCore.pxd
++++ b/python/quartz/_cython/CCore.pxd
+@@ -10,6 +10,7 @@
+ ctypedef float ParamType
+
+ cdef extern from "gate/gate_utils.h" namespace "quartz":
++    string gate_type_name(GateType)
+     cpdef enum class GateType:
+         h,
+         x,
+@@ -113,6 +114,8 @@
+         bool xfer_appliable(GraphXfer *, Op) const
+         shared_ptr[Graph] apply_xfer(GraphXfer *, Op, bool) const
+         pair[shared_ptr[Graph], vector[int]] apply_xfer_and_track_node(GraphXfer *, Op, bool, int) const
++        vector[size_t] xfer_binding(GraphXfer *, Op) const
++        pair[shared_ptr[Graph], vector[int]] apply_xfer_and_track_bindings(GraphXfer *, Op, bool, int, vector[size_t] &, vector[size_t] &) const
+         vector[size_t] appliable_xfers(Op, const vector[GraphXfer *] &) const
+         vector[size_t] appliable_xfers_parallel(Op, const vector[GraphXfer *] &) const
+         void all_ops(vector[Op]&) const
+--- a/python/quartz/_cython/core.pyx
++++ b/python/quartz/_cython/core.pyx
+@@ -8,6 +8,7 @@
+     EquivalenceSet,
+     Gate,
+     GateType,
++    gate_type_name,
+     Graph,
+     GraphXfer,
+     Op,
+@@ -18,6 +19,7 @@
+ from libcpp.memory cimport make_shared, shared_ptr
+ from libcpp.string cimport string
+ from libcpp.vector cimport vector
++from libcpp.utility cimport pair
+
+ import ctypes
+ from enum import Enum
+@@ -385,6 +387,10 @@
+         return PyGate().set_this(self.node.ptr)
+
+     @property
++    def gate_name(self):
++        return gate_type_name(self.node.ptr.tp).decode("utf-8")
++
++    @property
+     def gate_tp(self):
+         return self.node.ptr.tp
+
+@@ -490,6 +496,36 @@
+             return None, []
+         else:
+             return PyGraph().set_this(ret.first), ret.second
++
++    def available_xfer_bindings_parallel(self, *, QuartzContext context, PyNode node):
++        """Return (xfer_id, anchor_guid, ordered_source_guids) for exact matches."""
++        cdef vector[size_t] ids = deref(self.graph).appliable_xfers_parallel(node.node, context.v_xfers)
++        cdef vector[size_t] binding
++        cdef size_t index
++        result = []
++        for index in ids:
++            binding = deref(self.graph).xfer_binding(context.v_xfers[index], node.node)
++            if binding.size():
++                result.append((index, node.guid, list(binding)))
++        return result
++
++    def apply_xfer_with_binding_trace(self, *, PyXfer xfer, PyNode node,
++                                     eliminate_rotation: bool = False,
++                                     predecessor_layers: int = 1):
++        """Apply once and preserve source/destination pattern instruction order."""
++        if predecessor_layers < 0:
++            raise ValueError("predecessor_layers must be nonnegative")
++        if xfer.is_nop:
++            return self, [], [], []
++        cdef vector[size_t] source_guids, destination_guids
++        cdef pair[shared_ptr[Graph], vector[int]] ret
++        ret = deref(self.graph).apply_xfer_and_track_bindings(
++            xfer.graphXfer, node.node, eliminate_rotation, predecessor_layers,
++            source_guids, destination_guids)
++        if ret.first.get() == NULL:
++            return None, [], [], []
++        return (PyGraph().set_this(ret.first), list(ret.second),
++                list(source_guids), list(destination_guids))
+
+     def all_nodes(self):
+         return self.nodes
+@@ -574,6 +610,10 @@
+         fn_bytes = filename.encode('utf-8')
+         deref(self.graph).to_qasm(fn_bytes, False, False)
+
++    def to_qasm_with_guids(self):
++        cdef string s = deref(self.graph).to_qasm(False, True)
++        return s.decode("utf-8")
++
+     def to_qasm_str(self, *) -> str:
+         cdef string s = deref(self.graph).to_qasm(False, False)
+         return s.decode('utf-8')

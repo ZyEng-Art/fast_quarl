@@ -1,0 +1,15 @@
+{
+  "upstream": "https://github.com/quantum-compiler/Quarl",
+  "upstream_commit": "385cf5e04a41590a48a2fe82b99f5e99e6cd2279",
+  "xpu_adaptation_commit": "c719a205b75af90f01ab67affb764cdfff15a738",
+  "hardware": "Kunlun P800 OAM; torch_xmlir CUDA facade; two cards per learning/search arm",
+  "seed": 98766,
+  "initial_gates_after_rotation_merging": 46,
+  "accelerated_first_35_seconds": 9004.640183925629,
+  "baseline_first_35_seconds": 16562.923949956894,
+  "limitations": [
+    "One seed and run per arm; first-passage time is stochastic.",
+    "GNN microbenchmark does not measure full PPO or search speed.",
+    "Recorded runs used external controller paths; packaged runner replaces those paths with CLI options."
+  ]
+}

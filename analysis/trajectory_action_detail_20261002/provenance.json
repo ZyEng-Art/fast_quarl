@@ -1,0 +1,11 @@
+{
+  "inputs": [
+    "/Users/klx-pc/Downloads/barenco_tof_3",
+    "/Users/klx-pc/Downloads/gf2^6_mult"
+  ],
+  "ecc": "nam_ecc.json",
+  "ecc_sha256": "1871438bc2c8b204ae420b6500e9ae23e7830ec184b5a7dcf4ef554961c537ba",
+  "native_base_commit": "c719a205b75af90f01ab67affb764cdfff15a738",
+  "native_patch": "native_trace.patch",
+  "trace_sha256": "44da7817366b8aa737fe00c8280ce4be05ffed5062d28c810620dc20a2043c94"
+}
