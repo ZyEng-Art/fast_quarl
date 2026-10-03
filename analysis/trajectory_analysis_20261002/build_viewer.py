@@ -1,7 +1,9 @@
+# coding: utf-8
 from pathlib import Path
 import base64,gzip,json
 out=Path(__file__).resolve().parent
-payload=base64.b64encode(gzip.compress((out/'data.json').read_bytes(),compresslevel=9)).decode()
+packed=gzip.compress((out/'data.json').read_bytes(),compresslevel=9) if (out/'data.json').exists() else (out/'data.json.gz').read_bytes()
+payload=base64.b64encode(packed).decode()
 html='''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>电路优化轨迹观察器</title>
 <style>body{margin:0;background:#f5f7fc;color:#18243a;font:15px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}main{max-width:1500px;margin:auto;padding:30px}h1{font-size:29px;margin:0 0 12px}h2{font-size:18px}.muted{color:#64748b;line-height:1.7}.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:18px 0}.row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.stat{flex:1;min-width:140px;padding:14px;background:#f1f5fb;border-radius:10px}.stat strong{display:block;font-size:27px;margin-top:5px}select,button{border:1px solid #cbd5e1;border-radius:8px;background:white;padding:9px 12px;font:inherit;color:inherit}button{cursor:pointer}button:hover{background:#eef2ff}input[type=range]{flex:1;min-width:200px}.plot{width:100%;height:270px}.circuit{overflow:auto;max-height:630px;border:1px solid #e2e8f0;border-radius:10px}.legend{font-size:13px;color:#64748b}.badge{display:inline-block;padding:4px 10px;border-radius:8px;background:#e0e7ff;color:#3730a3}a{color:#2563eb}details{line-height:1.7}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:7px;border-bottom:1px solid #e2e8f0}.tip{color:#92400e;background:#fffbeb;padding:15px;border-radius:10px}@media(max-width:850px){.grid{grid-template-columns:1fr}main{padding:15px}}</style>
 <main><h1>电路优化轨迹观察器</h1><p class="muted">逐步查看门数变化、暂时扩张与局部电路重写。数据来自 Downloads 中两组已保存的成功轨迹。</p>

@@ -1,11 +1,12 @@
+# coding: utf-8
 from pathlib import Path
-import json
+import gzip,json
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
-out=Path(__file__).resolve().parent;data=json.loads((out/'data.json').read_text());summary=json.loads((out/'summary.json').read_text())
+out=Path(__file__).resolve().parent;data=json.loads((out/'data.json').read_bytes() if (out/'data.json').exists() else gzip.decompress((out/'data.json.gz').read_bytes()));summary=json.loads((out/'summary.json').read_text())
 font_manager.fontManager.addfont('/System/Library/Fonts/STHeiti Medium.ttc');plt.rcParams['font.family']=font_manager.FontProperties(fname='/System/Library/Fonts/STHeiti Medium.ttc').get_name();plt.rcParams['svg.fonttype']='none'
 fig,axs=plt.subplots(2,2,figsize=(14,8),layout='constrained')
 for d,ds,axes in zip(data,summary['datasets'],axs):
