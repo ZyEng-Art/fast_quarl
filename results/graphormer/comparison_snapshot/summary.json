@@ -1,0 +1,465 @@
+{
+  "updated_utc": "2026-10-03T05:07:36Z",
+  "seed": 98766,
+  "target": 35,
+  "arms": [
+    {
+      "name": "QGNN + subgraph",
+      "encoder": "QGNN",
+      "subgraph_opt": true,
+      "path": "/workspace/zengyong/quarl_experiments/runs/accelerated_rm_20261002",
+      "phase": "completed",
+      "error": null,
+      "best_gates": 35,
+      "elapsed_minutes": 150.07734377384185,
+      "first_35_minutes": 150.07733639876048,
+      "completed_iterations": 41,
+      "completed_transitions": 1574400,
+      "mean_iteration_seconds": 216.00572790348016,
+      "last5_iteration_seconds": 212.9484345044475,
+      "mean_collection_seconds": 172.72019782660976,
+      "mean_ppo_and_other_seconds": 43.28553007687041,
+      "parameters": null,
+      "curve": [
+        [
+          7.5531005859375e-05,
+          46
+        ],
+        [
+          2.836552699406942,
+          40
+        ],
+        [
+          15.516393172740937,
+          39
+        ],
+        [
+          17.685256604353587,
+          38
+        ],
+        [
+          144.57124269008636,
+          36
+        ],
+        [
+          150.07733639876048,
+          35
+        ]
+      ],
+      "code_commit": "c719a205b75af90f01ab67affb764cdfff15a738",
+      "last_encoder_stats": null
+    },
+    {
+      "name": "QGNN full graph",
+      "encoder": "QGNN",
+      "subgraph_opt": false,
+      "path": "/workspace/zengyong/quarl_experiments/runs/fullgraph_rm_20261003_continuous_r2",
+      "phase": "running",
+      "error": null,
+      "best_gates": 38,
+      "elapsed_minutes": 88.7641118645668,
+      "first_35_minutes": null,
+      "completed_iterations": 45,
+      "completed_transitions": 1728000,
+      "mean_iteration_seconds": 116.3692600059116,
+      "last5_iteration_seconds": 113.83332624635659,
+      "mean_collection_seconds": 80.80144997555556,
+      "mean_ppo_and_other_seconds": 35.56781003035605,
+      "parameters": null,
+      "curve": [
+        [
+          7.926225662231445e-05,
+          46
+        ],
+        [
+          1.334821593761444,
+          40
+        ],
+        [
+          3.3369162956873577,
+          38
+        ]
+      ],
+      "code_commit": "c719a205b75af90f01ab67affb764cdfff15a738",
+      "last_encoder_stats": null
+    },
+    {
+      "name": "QGNN + global mean",
+      "encoder": "QGNNGlobal",
+      "subgraph_opt": false,
+      "path": "/workspace/zengyong/fast_quarl/runs/global_context_rm_20261003",
+      "phase": "running",
+      "error": null,
+      "best_gates": 38,
+      "elapsed_minutes": 46.217924972375236,
+      "first_35_minutes": null,
+      "completed_iterations": 23,
+      "completed_transitions": 883200,
+      "mean_iteration_seconds": 115.61458507991073,
+      "last5_iteration_seconds": 119.87742157620377,
+      "mean_collection_seconds": 79.94710654786957,
+      "mean_ppo_and_other_seconds": 35.66747853204115,
+      "parameters": null,
+      "curve": [
+        [
+          0.00010170936584472657,
+          46
+        ],
+        [
+          1.2514027953147888,
+          40
+        ],
+        [
+          4.755285096168518,
+          38
+        ]
+      ],
+      "code_commit": "65206da9ae3ba8d3383c283d3dcca52f4f5b0951",
+      "last_encoder_stats": null
+    },
+    {
+      "name": "Graphormer full graph",
+      "encoder": "QGraphormer",
+      "subgraph_opt": false,
+      "path": "/workspace/zengyong/fast_quarl_graphormer/runs/graphormer_rm_20261003",
+      "phase": "running",
+      "error": null,
+      "best_gates": 38,
+      "elapsed_minutes": 7.091129259268443,
+      "first_35_minutes": null,
+      "completed_iterations": 2,
+      "completed_transitions": 76800,
+      "mean_iteration_seconds": 200.58959811355453,
+      "last5_iteration_seconds": 200.58959811355453,
+      "mean_collection_seconds": 90.1105278125,
+      "mean_ppo_and_other_seconds": 110.47907030105455,
+      "parameters": 2447956,
+      "curve": [
+        [
+          0.00010323127110799154,
+          46
+        ],
+        [
+          1.751949636141459,
+          40
+        ],
+        [
+          5.172318204243978,
+          39
+        ],
+        [
+          5.42266879081726,
+          38
+        ]
+      ],
+      "code_commit": "a5db1f8b0e3142f2be69defceaa9615899652a51",
+      "last_encoder_stats": {
+        "native_preprocessing": true,
+        "forward_calls": 96,
+        "cache_hits": 98381,
+        "cache_misses": 362419,
+        "prepare_seconds": 125.56480973097496
+      }
+    }
+  ],
+  "encoder_benchmark": {
+    "device": "cuda:1",
+    "parameters": {
+      "QGNN": 269952,
+      "QGNNGlobal": 302976,
+      "QGraphormer": 809172
+    },
+    "scope": "Encoder forward / forward+backward only; excludes action matching, rewrites, actor/critic and optimizer. Repeated 46-gate initial circuit gives warm structural cache; actual trajectory iteration timers include novel structures.",
+    "results": [
+      {
+        "encoder": "QGNN",
+        "batch": 8,
+        "nodes": 368,
+        "forward_backward": false,
+        "median_seconds": 0.0024675100576132536,
+        "samples_seconds": [
+          0.002608761191368103,
+          0.002462184987962246,
+          0.0024675100576132536
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNN",
+        "batch": 8,
+        "nodes": 368,
+        "forward_backward": true,
+        "median_seconds": 0.0059830991085618734,
+        "samples_seconds": [
+          0.006043002009391785,
+          0.005956940120086074,
+          0.0059830991085618734
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNN",
+        "batch": 64,
+        "nodes": 2944,
+        "forward_backward": false,
+        "median_seconds": 0.0027420129626989365,
+        "samples_seconds": [
+          0.0027408001478761435,
+          0.0027420129626989365,
+          0.002781060989946127
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNN",
+        "batch": 64,
+        "nodes": 2944,
+        "forward_backward": true,
+        "median_seconds": 0.006298427935689688,
+        "samples_seconds": [
+          0.006320748012512922,
+          0.006298427935689688,
+          0.006262429058551788
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNN",
+        "batch": 4800,
+        "nodes": 220800,
+        "forward_backward": false,
+        "median_seconds": 0.13407184404786676,
+        "samples_seconds": [
+          0.13563353312201798,
+          0.13251015497371554
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNN",
+        "batch": 4800,
+        "nodes": 220800,
+        "forward_backward": true,
+        "median_seconds": 0.30241850460879505,
+        "samples_seconds": [
+          0.30292991315945983,
+          0.30190709605813026
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNNGlobal",
+        "batch": 8,
+        "nodes": 368,
+        "forward_backward": false,
+        "median_seconds": 0.0030493400990962982,
+        "samples_seconds": [
+          0.0031299071852117777,
+          0.002995012793689966,
+          0.0030493400990962982
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNNGlobal",
+        "batch": 8,
+        "nodes": 368,
+        "forward_backward": true,
+        "median_seconds": 0.00681858416646719,
+        "samples_seconds": [
+          0.006829241057857871,
+          0.006816067034378648,
+          0.00681858416646719
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNNGlobal",
+        "batch": 64,
+        "nodes": 2944,
+        "forward_backward": false,
+        "median_seconds": 0.0032442158553749323,
+        "samples_seconds": [
+          0.0033230269327759743,
+          0.0032430870924144983,
+          0.0032442158553749323
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNNGlobal",
+        "batch": 64,
+        "nodes": 2944,
+        "forward_backward": true,
+        "median_seconds": 0.007304555969312787,
+        "samples_seconds": [
+          0.007304555969312787,
+          0.007312468020245433,
+          0.007285004016011953
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNNGlobal",
+        "batch": 4800,
+        "nodes": 220800,
+        "forward_backward": false,
+        "median_seconds": 0.14143728907220066,
+        "samples_seconds": [
+          0.1420576861128211,
+          0.1408168920315802
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGNNGlobal",
+        "batch": 4800,
+        "nodes": 220800,
+        "forward_backward": true,
+        "median_seconds": 0.3216527404729277,
+        "samples_seconds": [
+          0.3215773799456656,
+          0.3217281010001898
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {}
+      },
+      {
+        "encoder": "QGraphormer",
+        "batch": 8,
+        "nodes": 368,
+        "forward_backward": false,
+        "median_seconds": 0.006686843931674957,
+        "samples_seconds": [
+          0.006751687033101916,
+          0.006686843931674957,
+          0.006609800038859248
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {
+          "native_preprocessing": true,
+          "forward_calls": 4,
+          "cache_hits": 31,
+          "cache_misses": 1,
+          "prepare_seconds": 0.0020861360244452953
+        }
+      },
+      {
+        "encoder": "QGraphormer",
+        "batch": 8,
+        "nodes": 368,
+        "forward_backward": true,
+        "median_seconds": 0.015308227157220244,
+        "samples_seconds": [
+          0.01606363314203918,
+          0.015308227157220244,
+          0.015264885034412146
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {
+          "native_preprocessing": true,
+          "forward_calls": 8,
+          "cache_hits": 63,
+          "cache_misses": 1,
+          "prepare_seconds": 0.003907789243385196
+        }
+      },
+      {
+        "encoder": "QGraphormer",
+        "batch": 64,
+        "nodes": 2944,
+        "forward_backward": false,
+        "median_seconds": 0.011492203921079636,
+        "samples_seconds": [
+          0.011758684879168868,
+          0.011492203921079636,
+          0.010808386141434312
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {
+          "native_preprocessing": true,
+          "forward_calls": 12,
+          "cache_hits": 319,
+          "cache_misses": 1,
+          "prepare_seconds": 0.016994512174278498
+        }
+      },
+      {
+        "encoder": "QGraphormer",
+        "batch": 64,
+        "nodes": 2944,
+        "forward_backward": true,
+        "median_seconds": 0.01936390600167215,
+        "samples_seconds": [
+          0.019457864109426737,
+          0.01930849114432931,
+          0.01936390600167215
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {
+          "native_preprocessing": true,
+          "forward_calls": 16,
+          "cache_hits": 575,
+          "cache_misses": 1,
+          "prepare_seconds": 0.023833989165723324
+        }
+      },
+      {
+        "encoder": "QGraphormer",
+        "batch": 4800,
+        "nodes": 220800,
+        "forward_backward": false,
+        "median_seconds": 0.5075612635118887,
+        "samples_seconds": [
+          0.5067290430888534,
+          0.508393483934924
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {
+          "native_preprocessing": true,
+          "forward_calls": 19,
+          "cache_hits": 14975,
+          "cache_misses": 1,
+          "prepare_seconds": 0.8746463800780475
+        }
+      },
+      {
+        "encoder": "QGraphormer",
+        "batch": 4800,
+        "nodes": 220800,
+        "forward_backward": true,
+        "median_seconds": 0.7460793299833313,
+        "samples_seconds": [
+          0.7454730118624866,
+          0.7466856481041759
+        ],
+        "structural_cache": "warm; same repeated initial circuit",
+        "stats": {
+          "native_preprocessing": true,
+          "forward_calls": 22,
+          "cache_hits": 29375,
+          "cache_misses": 1,
+          "prepare_seconds": 1.729126414982602
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "One seed; differing start times and host load. Observed wall times are not a causal architecture ranking.",
+    "Model parameter counts differ. All full-graph arms use identical PPO/search budgets and no pretraining.",
+    "Iteration time excludes outer checkpoint saving, initialization and concurrent search; first-target time includes warmup and search.",
+    "Completed transitions exclude any in-progress rollout. Baseline with subgraphs is a historical completed run.",
+    "Graphormer path edge encoding averages all shortest paths rather than picking one; no molecular pretraining or fairseq dependency."
+  ]
+}

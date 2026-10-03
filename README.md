@@ -105,3 +105,5 @@ The comparison registry contains node36 paths for the historical QGNN + subgraph
 Reports show gate-count curves, completed transitions, iteration/collection/update times and first verified 35-gate time. Microbenchmarks cover batches 8, 64 and 4,800, include encoder structural preparation, and use repeated 46-gate graphs with warm structural cache. They exclude action matching, rewrites and the rest of PPO; actual iterations include novel structures.
 
 CPU/P800 checks cover native-vs-Python preprocessing, multiple tied shortest paths, disconnected graphs, padding/batch isolation, permutation equivariance, influence beyond six hops, finite gradients including spatial/path encoders, Adam updates and checkpoint reload. Evidence is in `results/graphormer/`.
+
+A timestamped initial comparison is available at `results/graphormer/comparison_snapshot/index.html`; the live node36 report is `runs/architecture_comparison/index.html`. The first measured Graphormer iteration is recorded in `results/graphormer/first_iteration.json`, including cold-structure/cache preparation counters.

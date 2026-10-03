@@ -1,0 +1,20 @@
+{
+  "iteration": 0,
+  "seconds": 228.25204696808942,
+  "loss": 1.0465117692947388,
+  "transitions": 38400,
+  "train_encoder_stats": {
+    "native_preprocessing": true,
+    "forward_calls": 48,
+    "cache_hits": 30194,
+    "cache_misses": 200206,
+    "prepare_seconds": 83.65733018727042
+  },
+  "rollout_encoder_stats": {
+    "native_preprocessing": true,
+    "forward_calls": 600,
+    "cache_hits": 7040,
+    "cache_misses": 31360,
+    "prepare_seconds": 8.706950129009783
+  }
+}
