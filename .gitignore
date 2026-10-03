@@ -75,3 +75,5 @@ runs/
 .venv/
 !results/**/*.json
 !analysis/**/*.json
+
+.graphormer-native/

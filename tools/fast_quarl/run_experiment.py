@@ -28,7 +28,7 @@ def train(a):
     atomic(run/'rollout_status.json',{'iteration':self.i_iter,'transitions':self.tot_exps_collected,'model_state_max_delta':delta,'backward_calls':0,'optimizer_steps':0,'elapsed_seconds':time.time()-self.start_time_sec})
     result=0.0
    else:result=super().train_iter()
-   with (run/'iteration_timing.jsonl').open('a') as f:f.write(json.dumps({'iteration':self.i_iter,'seconds':time.monotonic()-begin,'loss':result,'transitions':self.tot_exps_collected})+'\n')
+   with (run/'iteration_timing.jsonl').open('a') as f:f.write(json.dumps({'iteration':self.i_iter,'seconds':time.monotonic()-begin,'loss':result,'transitions':self.tot_exps_collected,'train_encoder_stats':getattr(self.ac_net.gnn,'stats',{}),'rollout_encoder_stats':getattr(self.ac_net_old.gnn,'stats',{})})+'\n')
    return result
   def _make_actor_critic(self):
    model=super()._make_actor_critic()
@@ -42,7 +42,7 @@ def train(a):
    state={k:v.detach().cpu().clone() for k,v in model.state_dict().items()}
    fingerprint=hashlib.sha256(b''.join(v.numpy().tobytes() for v in state.values())).hexdigest()
    torch.save({'model_state_dict':state},run/'initial.pt')
-   atomic(run/'initial.json',{'hash':fingerprint,'seed':a.seed,'mode':a.mode})
+   atomic(run/'initial.json',{'hash':fingerprint,'seed':a.seed,'mode':a.mode,'gnn_type':a.gnn_type,'parameters':sum(p.numel() for p in model.parameters()),'encoder_parameters':sum(p.numel() for p in model.gnn.parameters())})
    return model
  run=BASE/f'{a.seed}_{a.mode}';run.mkdir(parents=True,exist_ok=True)
  cfg=OmegaConf.structured(Nam2FTConfig());cfg.input_graphs[0].path=str(BASE/'initial.qasm');cfg.seed=a.seed;cfg.gpus=[a.gpu];cfg.resume=False;cfg.wandb.en=False
@@ -196,6 +196,6 @@ def controller():
   for log in logs.values():log.close()
 
 if __name__=='__main__':
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('kind',choices=['controller','train','search']);p.add_argument('--seed',type=int,default=98766);p.add_argument('--mode',choices=['update','uniform'],default='update');p.add_argument('--gpu',type=int,default=0);p.add_argument('--train-gpu',type=int,default=0);p.add_argument('--search-gpu',type=int,default=1);p.add_argument('--run-dir',type=pathlib.Path,default=BASE);p.add_argument('--preprocess',action=argparse.BooleanOptionalAction,default=True);p.add_argument('--gnn-type',choices=['QGNN','QGNNGlobal'],default='QGNN');p.add_argument('--subgraph-opt',action=argparse.BooleanOptionalAction,default=True);p.add_argument('--ddp-port',type=int,default=24600);ARGS=p.parse_args();BASE=ARGS.run_dir.resolve()
- if ARGS.gnn_type=='QGNNGlobal' and ARGS.subgraph_opt:p.error('QGNNGlobal requires --no-subgraph-opt to use complete circuit context')
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('kind',choices=['controller','train','search']);p.add_argument('--seed',type=int,default=98766);p.add_argument('--mode',choices=['update','uniform'],default='update');p.add_argument('--gpu',type=int,default=0);p.add_argument('--train-gpu',type=int,default=0);p.add_argument('--search-gpu',type=int,default=1);p.add_argument('--run-dir',type=pathlib.Path,default=BASE);p.add_argument('--preprocess',action=argparse.BooleanOptionalAction,default=True);p.add_argument('--gnn-type',choices=['QGNN','QGNNGlobal','QGraphormer'],default='QGNN');p.add_argument('--subgraph-opt',action=argparse.BooleanOptionalAction,default=True);p.add_argument('--ddp-port',type=int,default=24600);ARGS=p.parse_args();BASE=ARGS.run_dir.resolve()
+ if ARGS.gnn_type in ('QGNNGlobal','QGraphormer') and ARGS.subgraph_opt:p.error('Global encoders require --no-subgraph-opt to use complete circuit context')
  {'controller':controller,'train':lambda:train(ARGS),'search':lambda:search(ARGS)}[ARGS.kind]()

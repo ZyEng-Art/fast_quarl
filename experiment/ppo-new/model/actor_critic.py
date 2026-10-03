@@ -12,6 +12,7 @@ from model.basis import *
 from model.qgin import *
 from model.qgnn import *
 from model.qgnn_global import QGNNGlobal
+from model.qgraphormer import QGraphormer
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 
@@ -54,8 +55,8 @@ class ActorCritic(nn.Module):
 
         self.gnn_num_layers = gnn_num_layers
         self.device = device
-        if gnn_type.lower() in ('qgnn', 'qgnnglobal'):
-            gnn_class = QGNNGlobal if gnn_type.lower() == 'qgnnglobal' else QGNN
+        if gnn_type.lower() in ('qgnn', 'qgnnglobal', 'qgraphormer'):
+            gnn_class = {'qgnn': QGNN, 'qgnnglobal': QGNNGlobal, 'qgraphormer': QGraphormer}[gnn_type.lower()]
             self.gnn = gnn_class(
                 gnn_num_layers,
                 num_gate_types,

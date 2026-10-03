@@ -1,0 +1,293 @@
+{
+  "device": "cuda:1",
+  "parameters": {
+    "QGNN": 269952,
+    "QGNNGlobal": 302976,
+    "QGraphormer": 809172
+  },
+  "scope": "Encoder forward / forward+backward only; excludes action matching, rewrites, actor/critic and optimizer. Repeated 46-gate initial circuit gives warm structural cache; actual trajectory iteration timers include novel structures.",
+  "results": [
+    {
+      "encoder": "QGNN",
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": false,
+      "median_seconds": 0.0024675100576132536,
+      "samples_seconds": [
+        0.002608761191368103,
+        0.002462184987962246,
+        0.0024675100576132536
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNN",
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": true,
+      "median_seconds": 0.0059830991085618734,
+      "samples_seconds": [
+        0.006043002009391785,
+        0.005956940120086074,
+        0.0059830991085618734
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNN",
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": false,
+      "median_seconds": 0.0027420129626989365,
+      "samples_seconds": [
+        0.0027408001478761435,
+        0.0027420129626989365,
+        0.002781060989946127
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNN",
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": true,
+      "median_seconds": 0.006298427935689688,
+      "samples_seconds": [
+        0.006320748012512922,
+        0.006298427935689688,
+        0.006262429058551788
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNN",
+      "batch": 4800,
+      "nodes": 220800,
+      "forward_backward": false,
+      "median_seconds": 0.13407184404786676,
+      "samples_seconds": [
+        0.13563353312201798,
+        0.13251015497371554
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNN",
+      "batch": 4800,
+      "nodes": 220800,
+      "forward_backward": true,
+      "median_seconds": 0.30241850460879505,
+      "samples_seconds": [
+        0.30292991315945983,
+        0.30190709605813026
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNNGlobal",
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": false,
+      "median_seconds": 0.0030493400990962982,
+      "samples_seconds": [
+        0.0031299071852117777,
+        0.002995012793689966,
+        0.0030493400990962982
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNNGlobal",
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": true,
+      "median_seconds": 0.00681858416646719,
+      "samples_seconds": [
+        0.006829241057857871,
+        0.006816067034378648,
+        0.00681858416646719
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNNGlobal",
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": false,
+      "median_seconds": 0.0032442158553749323,
+      "samples_seconds": [
+        0.0033230269327759743,
+        0.0032430870924144983,
+        0.0032442158553749323
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNNGlobal",
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": true,
+      "median_seconds": 0.007304555969312787,
+      "samples_seconds": [
+        0.007304555969312787,
+        0.007312468020245433,
+        0.007285004016011953
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNNGlobal",
+      "batch": 4800,
+      "nodes": 220800,
+      "forward_backward": false,
+      "median_seconds": 0.14143728907220066,
+      "samples_seconds": [
+        0.1420576861128211,
+        0.1408168920315802
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGNNGlobal",
+      "batch": 4800,
+      "nodes": 220800,
+      "forward_backward": true,
+      "median_seconds": 0.3216527404729277,
+      "samples_seconds": [
+        0.3215773799456656,
+        0.3217281010001898
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {}
+    },
+    {
+      "encoder": "QGraphormer",
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": false,
+      "median_seconds": 0.006686843931674957,
+      "samples_seconds": [
+        0.006751687033101916,
+        0.006686843931674957,
+        0.006609800038859248
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 4,
+        "cache_hits": 31,
+        "cache_misses": 1,
+        "prepare_seconds": 0.0020861360244452953
+      }
+    },
+    {
+      "encoder": "QGraphormer",
+      "batch": 8,
+      "nodes": 368,
+      "forward_backward": true,
+      "median_seconds": 0.015308227157220244,
+      "samples_seconds": [
+        0.01606363314203918,
+        0.015308227157220244,
+        0.015264885034412146
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 8,
+        "cache_hits": 63,
+        "cache_misses": 1,
+        "prepare_seconds": 0.003907789243385196
+      }
+    },
+    {
+      "encoder": "QGraphormer",
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": false,
+      "median_seconds": 0.011492203921079636,
+      "samples_seconds": [
+        0.011758684879168868,
+        0.011492203921079636,
+        0.010808386141434312
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 12,
+        "cache_hits": 319,
+        "cache_misses": 1,
+        "prepare_seconds": 0.016994512174278498
+      }
+    },
+    {
+      "encoder": "QGraphormer",
+      "batch": 64,
+      "nodes": 2944,
+      "forward_backward": true,
+      "median_seconds": 0.01936390600167215,
+      "samples_seconds": [
+        0.019457864109426737,
+        0.01930849114432931,
+        0.01936390600167215
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 16,
+        "cache_hits": 575,
+        "cache_misses": 1,
+        "prepare_seconds": 0.023833989165723324
+      }
+    },
+    {
+      "encoder": "QGraphormer",
+      "batch": 4800,
+      "nodes": 220800,
+      "forward_backward": false,
+      "median_seconds": 0.5075612635118887,
+      "samples_seconds": [
+        0.5067290430888534,
+        0.508393483934924
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 19,
+        "cache_hits": 14975,
+        "cache_misses": 1,
+        "prepare_seconds": 0.8746463800780475
+      }
+    },
+    {
+      "encoder": "QGraphormer",
+      "batch": 4800,
+      "nodes": 220800,
+      "forward_backward": true,
+      "median_seconds": 0.7460793299833313,
+      "samples_seconds": [
+        0.7454730118624866,
+        0.7466856481041759
+      ],
+      "structural_cache": "warm; same repeated initial circuit",
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 22,
+        "cache_hits": 29375,
+        "cache_misses": 1,
+        "prepare_seconds": 1.729126414982602
+      }
+    }
+  ]
+}

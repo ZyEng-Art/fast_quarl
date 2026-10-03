@@ -1,0 +1,30 @@
+{
+  "seed": 98766,
+  "target_gates": 35,
+  "runs": [
+    {
+      "name": "QGNN + subgraph",
+      "encoder": "QGNN",
+      "subgraph_opt": true,
+      "path": "/workspace/zengyong/quarl_experiments/runs/accelerated_rm_20261002"
+    },
+    {
+      "name": "QGNN full graph",
+      "encoder": "QGNN",
+      "subgraph_opt": false,
+      "path": "/workspace/zengyong/quarl_experiments/runs/fullgraph_rm_20261003_continuous_r2"
+    },
+    {
+      "name": "QGNN + global mean",
+      "encoder": "QGNNGlobal",
+      "subgraph_opt": false,
+      "path": "/workspace/zengyong/fast_quarl/runs/global_context_rm_20261003"
+    },
+    {
+      "name": "Graphormer full graph",
+      "encoder": "QGraphormer",
+      "subgraph_opt": false,
+      "path": "/workspace/zengyong/fast_quarl_graphormer/runs/graphormer_rm_20261003"
+    }
+  ]
+}

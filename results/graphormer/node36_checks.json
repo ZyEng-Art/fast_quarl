@@ -1,0 +1,41 @@
+{
+  "structure": {
+    "native_reference_max_error": 0.0,
+    "disconnected_distance": -1,
+    "all_shortest_path_average": true
+  },
+  "devices": [
+    {
+      "device": "cpu",
+      "batch_isolation_error": 0.0,
+      "permutation_error": 4.76837158203125e-07,
+      "distant_change": 0.023354709148406982,
+      "update_output_change": 0.5217890739440918,
+      "reload_error": 0.0,
+      "finite_gradients": true,
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 9,
+        "cache_hits": 6,
+        "cache_misses": 5,
+        "prepare_seconds": 0.002994011854752898
+      }
+    },
+    {
+      "device": "cuda:6",
+      "batch_isolation_error": 0.0,
+      "permutation_error": 4.76837158203125e-07,
+      "distant_change": 0.020975828170776367,
+      "update_output_change": 0.6331028342247009,
+      "reload_error": 0.0,
+      "finite_gradients": true,
+      "stats": {
+        "native_preprocessing": true,
+        "forward_calls": 9,
+        "cache_hits": 6,
+        "cache_misses": 5,
+        "prepare_seconds": 0.0028198498766869307
+      }
+    }
+  ]
+}

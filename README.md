@@ -82,3 +82,26 @@ python tools/fast_quarl/run_experiment.py controller --gnn-type QGNNGlobal --no-
 `QUARL_NATIVE_PYTHON` optionally points to a compatible existing Quartz Python build; normally build this checkout following the instructions above. On node36 the experiment reuses the existing compiled Quartz extension while loading the model and PPO code from this branch. Results must be compared with the full-graph QGNN arm using transitions and wall time to first verified 35 gates. Extra model parameters and changed initial actor/critic RNG state mean this is an architecture comparison rather than identical-model timing.
 
 Checks cover per-circuit pooling isolation, node permutation equivariance, influence beyond six hops, finite gradients, Adam updates, and actor/critic output shapes on CPU and P800. Node36 evidence is stored in `results/global_context/node36_checks.json`.
+
+
+## Circuit Graphormer comparison
+
+Branch `feat/graphormer` adds an independently implemented circuit adaptation of Graphormer (https://arxiv.org/abs/2106.05234; structural design reference: https://github.com/microsoft/Graphormer). It uses six pre-norm Transformer layers, hidden width 128, four global attention heads, FFN width 256, no dropout, and a virtual graph token. Gate types and original DAG in/out degrees initialize nodes; shortest-path distance and path edge features bias every attention head. Attention is global within each circuit, including disconnected components, with padding masked. Actor/Critic interfaces and local `next_nodes` bootstrapping stay unchanged.
+
+Distances follow Quartz's bidirectional DGL topology; centrality counts original forward DAG edges. Distances are bucketed at 32 with a separate unreachable bucket, degrees at 32, and source/destination wire-port indices at 7. Path features encode source port, destination port and reversed direction, averaged over **all** shortest paths so node reordering does not choose different tied paths. This differs from the official implementation's single-path and hop-specific mixing; no pretrained Graphormer weights are used.
+
+Only parameter-independent structure is cached (up to 1,024 entries / 64 MiB per model); no hidden representations or learned attention biases are cached. A small optional C++ helper computes shortest paths/edge statistics; Python fallback is correct but slower. Build the helper before timing:
+
+```bash
+bash tools/fast_quarl/build_graphormer.sh
+python tools/fast_quarl/check_graphormer.py --gpu 6 --output results/graphormer/checks.json
+python tools/fast_quarl/run_experiment.py controller --gnn-type QGraphormer --no-subgraph-opt --train-gpu 6 --search-gpu 7 --ddp-port 25400 --run-dir runs/graphormer_rm
+python tools/fast_quarl/benchmark_encoders.py --gpu 1 --output results/graphormer/encoder_benchmark.json
+python tools/fast_quarl/compare_architectures.py --registry results/graphormer/comparison_runs.json --output runs/architecture_comparison --watch 30
+```
+
+The comparison registry contains node36 paths for the historical QGNN + subgraph baseline, QGNN full graph, QGNN + global mean, and circuit Graphormer. All use seed 98766, RM initial 46 gates, 64 x 600 rollout, PPO five epochs / minibatch 4,800, identical learning rates, five-minute search warmup and 20-minute search restarts. Each full-graph arm has one training card and one search card. Stop requires a verified equivalent circuit with at most 35 gates. Model parameter counts differ; wall times start at different moments with different host load, so this one-seed comparison cannot establish a stable architecture ranking.
+
+Reports show gate-count curves, completed transitions, iteration/collection/update times and first verified 35-gate time. Microbenchmarks cover batches 8, 64 and 4,800, include encoder structural preparation, and use repeated 46-gate graphs with warm structural cache. They exclude action matching, rewrites and the rest of PPO; actual iterations include novel structures.
+
+CPU/P800 checks cover native-vs-Python preprocessing, multiple tied shortest paths, disconnected graphs, padding/batch isolation, permutation equivariance, influence beyond six hops, finite gradients including spatial/path encoders, Adam updates and checkpoint reload. Evidence is in `results/graphormer/`.
