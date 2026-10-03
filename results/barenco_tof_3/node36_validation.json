@@ -1,0 +1,21 @@
+{
+  "execution_site": "node36/xsgl_zengyong",
+  "hardware": "Kunlun P800 OAM",
+  "implementation_commit": "3011a327bcd557fb45b5061b5274fb6da3b19a5a",
+  "checks": [
+    {
+      "device": "cpu",
+      "forward_max_error": 1.1920928955078125e-07,
+      "gradient_parity": true,
+      "optimizer_updated": true
+    },
+    {
+      "device": "cuda:0",
+      "forward_max_error": 1.043081283569336e-06,
+      "gradient_parity": true,
+      "optimizer_updated": true
+    }
+  ],
+  "best_35_gate_count": 35,
+  "best_35_unitary_equivalent": true
+}
